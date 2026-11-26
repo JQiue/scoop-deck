@@ -17,8 +17,8 @@ ScoopDeck 不另建一套包数据库，而是把本机的 Scoop 环境整理成
 
 ## 截图
 
-| 已安装 | 包详情 |
-| --- | --- |
+| 已安装                                        | 包详情                                  |
+| --------------------------------------------- | --------------------------------------- |
 | ![已安装列表](docs/screenshots/installed.png) | ![包详情](docs/screenshots/details.png) |
 
 ![设置页](docs/screenshots/settings.png)
@@ -124,22 +124,22 @@ scoop update scoop-deck
 
 ### 数据与状态文件
 
-| 路径 | 用途 |
-| --- | --- |
-| `%USERPROFILE%\.config\scoop\config.json` | Scoop 配置文件（设置页仅改写白名单键，特意排除需 Scoop 副作用的 `use_sqlite_cache`）。 |
-| `%LOCALAPPDATA%\ScoopDeck\settings.json` | ScoopDeck 自身设置（如 GitHub 下载代理）。 |
-| `%LOCALAPPDATA%\ScoopDeck\catalog.json` | 可安装清单缓存；删除后重启可强制重新扫描所有 bucket。 |
-| `%APPDATA%\io.github.jqiue.scoopdeck\storage.json` | 界面本地状态：窗口位置与尺寸、外观主题偏好、界面语言偏好。 |
-| `<Scoop 根目录>\cache\` | Scoop 下载缓存（默认 `%USERPROFILE%\scoop\cache`），可在设置页清理。 |
+| 路径                                               | 用途                                                                                   |
+| -------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `%USERPROFILE%\.config\scoop\config.json`          | Scoop 配置文件（设置页仅改写白名单键，特意排除需 Scoop 副作用的 `use_sqlite_cache`）。 |
+| `%LOCALAPPDATA%\ScoopDeck\settings.json`           | ScoopDeck 自身设置（如 GitHub 下载代理）。                                             |
+| `%LOCALAPPDATA%\ScoopDeck\catalog.json`            | 可安装清单缓存；删除后重启可强制重新扫描所有 bucket。                                  |
+| `%APPDATA%\io.github.jqiue.scoopdeck\storage.json` | 界面本地状态：窗口位置与尺寸、外观主题偏好、界面语言偏好。                             |
+| `<Scoop 根目录>\cache\`                            | Scoop 下载缓存（默认 `%USERPROFILE%\scoop\cache`），可在设置页清理。                   |
 
 ## 技术栈与项目结构
 
-| 层 | 技术选型 |
-| --- | --- |
-| 界面 | TSX、[nsh](https://nsh.dev)、[nsh-omarchy](https://huacnlee.github.io/nsh-omarchy/) 组件库、Tailwind 风格样式、Flexoki Light / Tokyo Night 主题 |
-| 原生后端 | Rust 2024、`nsh-core` 0.7.1、`#[native_module("scoop-deck/native")]` |
-| 数据与网络 | `serde`、`serde_json`、`sha2`、`ureq`（支持断点续传与 GitHub 代理） |
-| 外部调用 | `scoop`（PowerShell）、`git`、PowerShell + WinForms 文件对话框 |
+| 层         | 技术选型                                                                                                                                        |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| 界面       | TSX、[nsh](https://nsh.dev)、[nsh-omarchy](https://huacnlee.github.io/nsh-omarchy/) 组件库、Tailwind 风格样式、Flexoki Light / Tokyo Night 主题 |
+| 原生后端   | Rust 2024、`nsh-core` 0.7.1、`#[native_module("scoop-deck/native")]`                                                                            |
+| 数据与网络 | `serde`、`serde_json`、`sha2`、`ureq`（支持断点续传与 GitHub 代理）                                                                             |
+| 外部调用   | `scoop`（PowerShell）、`git`、PowerShell + WinForms 文件对话框                                                                                  |
 
 没有 Node.js 或 npm 依赖；TSX 通过 `scoop-deck/native` 调用 Rust 导出的 `Scoop` 模块，构建、类型检查和打包均由 `nsh` 完成。
 
@@ -183,14 +183,14 @@ scoop update scoop-deck
 
 ## 开发命令
 
-| 命令 | 作用 |
-| --- | --- |
-| `nsh run` | 启动开发宿主（TSX 热更新；修改 Rust 后自动重编译并重启宿主）。 |
-| `nsh check` | TypeScript 类型检查 + `cargo check`，并重新生成 `.nsh/` 类型与宿主 crate。修改导出的 Rust 签名后必须运行。 |
-| `nsh test` | 运行 Rust 单元测试与 `ui/App.test.tsx` 无头测试（约 15–20 秒）。 |
-| `nsh package --target windows` | 打包 Windows 应用，产物位于 `.nsh\out`。 |
-| `nsh add nsh-omarchy` / `nsh upgrade` | 安装或升级 `nsh.json` 中的 nshm 组件依赖。 |
-| `cargo fmt` | 格式化 Rust 代码（`nsh check` 不会自动格式化）。 |
+| 命令                                  | 作用                                                                                                       |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `nsh run`                             | 启动开发宿主（TSX 热更新；修改 Rust 后自动重编译并重启宿主）。                                             |
+| `nsh check`                           | TypeScript 类型检查 + `cargo check`，并重新生成 `.nsh/` 类型与宿主 crate。修改导出的 Rust 签名后必须运行。 |
+| `nsh test`                            | 运行 Rust 单元测试与 `ui/App.test.tsx` 无头测试（约 15–20 秒）。                                           |
+| `nsh package --target windows`        | 打包 Windows 应用，产物位于 `.nsh\out`。                                                                   |
+| `nsh add nsh-omarchy` / `nsh upgrade` | 安装或升级 `nsh.json` 中的 nshm 组件依赖。                                                                 |
+| `cargo fmt`                           | 格式化 Rust 代码（`nsh check` 不会自动格式化）。                                                           |
 
 涉及真实 Scoop 缓存、桌面或网络的测试默认标记为 `#[ignore]`，可手动执行：
 

@@ -1,0 +1,14 @@
+.nsh/
+target/
+
+# Local agent skills and editor state
+.agents/
+.vscode/
+.idea/
+
+# Machine-specific Cargo mirror / proxy settings
+.cargo/
+
+# Never commit update signing keys or secrets
+*.secret
+*.key

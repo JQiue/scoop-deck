@@ -1,0 +1,14 @@
+{
+  "name": "ScoopDeck",
+  "id": "io.github.jqiue.scoopdeck",
+  "version": "0.0.0",
+  "build": 1,
+  "icon": "assets/icon.png",
+  "nsh": ">=0.7.1",
+  "theme": "theme.json",
+  "singleInstance": true,
+  "rust": ".",
+  "dependencies": {
+    "nsh-omarchy": "^0.2.0"
+  }
+}

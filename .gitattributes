@@ -1,0 +1,9 @@
+* text=auto
+
+*.rs text
+*.ts text
+*.tsx text
+*.json text
+*.toml text
+*.md text
+*.png binary

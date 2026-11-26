@@ -2,34 +2,37 @@ import { signal, Scroll, Text, View } from "nsh";
 import { Badge, Button, Panel, Progress } from "./omarchy";
 import { stageLabel } from "./ui";
 import { canCancelJob, useDeck, type Job, type JobKind } from "./deck";
+import { t } from "./i18n";
 
 function kindLabel(kind: JobKind): string {
   switch (kind) {
     case "install":
-      return "安装";
+      return t("common.install");
     case "update":
-      return "更新";
+      return t("common.update");
     default:
-      return "卸载";
+      return t("common.uninstall");
   }
 }
 
 function jobStatus(job: Job): string {
   switch (job.status) {
     case "waiting":
-      return "排队中";
+      return t("job.waiting");
     case "downloading":
       return job.percent == null
-        ? `下载 · ${stageLabel(job.stage)}`
-        : `下载 ${Math.round(job.percent)}%`;
+        ? t("queue.downloadingStage", { stage: stageLabel(job.stage) })
+        : t("queue.downloadingPercent", {
+            percent: Math.round(job.percent),
+          });
     case "ready":
-      return "待安装";
+      return t("job.ready");
     case "installing":
       return job.kind === "uninstall"
-        ? "卸载中"
+        ? t("job.uninstalling")
         : stageLabel(job.stage);
     default:
-      return "失败";
+      return t("job.failed");
   }
 }
 
@@ -58,7 +61,7 @@ export function QueueDock() {
     <If when={jobs().length > 0}>
       <View class="border-t border-border bg-background">
         <If when={open()}>
-          <Panel title="下载队列" variant="outline" class="m-3">
+          <Panel title={t("queue.title")} variant="outline" class="m-3">
             <Scroll
               style={{ maxHeight: 160 }}
               contentStyle={{ paddingBottom: 8 }}
@@ -85,12 +88,12 @@ export function QueueDock() {
                         </Text>
                         <If when={item().status === "failed"}>
                           <Button
-                            label="重试"
+                            label={t("common.retry")}
                             size="small"
                             onPress={() => retryJob(item().name, item().kind)}
                           />
                           <Button
-                            label="忽略"
+                            label={t("common.ignore")}
                             size="small"
                             variant="ghost"
                             onPress={() => removeJob(item().name, item().kind)}
@@ -98,7 +101,7 @@ export function QueueDock() {
                         </If>
                         <If when={canCancelJob(item())}>
                           <Button
-                            label="取消"
+                            label={t("common.cancel")}
                             size="small"
                             variant="ghost"
                             onPress={() =>
@@ -116,19 +119,21 @@ export function QueueDock() {
         </If>
         <View class="flex-row items-center gap-3 px-4 py-2">
           <Badge
-            label={`队列（${jobs().length}）`}
+            label={t("queue.count", { count: jobs().length })}
             variant="primary"
             size="large"
           />
           <Text class="flex-1 text-xs text-muted-foreground">
-            下载最多 3 个并行，安装逐个进行
+            {t("queue.hint")}
           </Text>
           <Button
-            label={open() ? "收起" : "展开"}
+            label={open() ? t("common.collapse") : t("common.expand")}
             icon={open() ? "chevron-down" : "chevron-up"}
             size="small"
             variant="ghost"
-            accessibilityLabel={open() ? "收起下载队列" : "展开下载队列"}
+            accessibilityLabel={
+              open() ? t("queue.close") : t("queue.open")
+            }
             onPress={() => open.update((value) => !value)}
           />
         </View>

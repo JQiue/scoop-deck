@@ -1,6 +1,7 @@
 import { Clipboard, effect, Scroll, signal, Text, View } from "nsh";
 import { Button } from "./omarchy";
 import { useDeck } from "./deck";
+import { t } from "./i18n";
 
 /** 操作失败的浮动提示：顶部居中，不挤占页面布局。 */
 export function ErrorToast() {
@@ -67,7 +68,7 @@ export function ErrorToast() {
                     {message()}
                   </Text>
                   <Text class="shrink-0 text-xs text-muted-foreground">
-                    展开
+                    {t("error.expand")}
                   </Text>
                 </View>
               </If>
@@ -84,22 +85,22 @@ export function ErrorToast() {
               <If when={expanded()}>
                 <View class="mt-2 flex-row items-center justify-end gap-1 border-t border-border pt-2">
                   <Button
-                    label="复制"
+                    label={t("common.copy")}
                     size="small"
                     variant="ghost"
                     onPress={() => {
                       void Clipboard.writeText(message());
-                      notify("错误信息已复制");
+                      notify(t("error.copied"));
                     }}
                   />
                   <Button
-                    label="收起"
+                    label={t("error.collapse")}
                     size="small"
                     variant="ghost"
                     onPress={() => expanded.set(false)}
                   />
                   <Button
-                    label="关闭"
+                    label={t("error.close")}
                     size="small"
                     variant="ghost"
                     onPress={() => error.set(null)}

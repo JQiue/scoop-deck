@@ -1,0 +1,797 @@
+_version: 2
+
+# App shell
+tabs.installed:
+  en: "Installed"
+  zh-CN: "已安装"
+tabs.search:
+  en: "Search"
+  zh-CN: "搜索"
+tabs.buckets:
+  en: "Buckets"
+  zh-CN: "Bucket"
+tabs.settings:
+  en: "Settings"
+  zh-CN: "设置"
+app.checking:
+  en: "Checking Scoop…"
+  zh-CN: "正在检查 Scoop…"
+app.nav:
+  en: "Main navigation"
+  zh-CN: "主导航"
+app.errorTitle:
+  en: "The interface failed to load"
+  zh-CN: "界面加载失败"
+app.retry:
+  en: "Retry"
+  zh-CN: "重试"
+
+# Tray
+tray.show:
+  en: "Show"
+  zh-CN: "显示"
+tray.queue:
+  en: "Queue (%{count})"
+  zh-CN: "队列（%{count}）"
+tray.queueEmpty:
+  en: "Queue is empty"
+  zh-CN: "队列为空"
+tray.quit:
+  en: "Quit"
+  zh-CN: "退出"
+tray.downloading:
+  en: "downloading"
+  zh-CN: "下载中"
+tray.uninstalling:
+  en: "uninstalling"
+  zh-CN: "卸载中"
+tray.installing:
+  en: "installing"
+  zh-CN: "安装中"
+tray.tooltip:
+  en: "ScoopDeck · %{activity} · queue %{count}"
+  zh-CN: "ScoopDeck · %{activity} · 队列 %{count}"
+tray.tooltipIdle:
+  en: "ScoopDeck"
+  zh-CN: "ScoopDeck"
+
+# Common
+common.install:
+  en: "Install"
+  zh-CN: "安装"
+common.update:
+  en: "Update"
+  zh-CN: "更新"
+common.uninstall:
+  en: "Uninstall"
+  zh-CN: "卸载"
+common.cancel:
+  en: "Cancel"
+  zh-CN: "取消"
+common.retry:
+  en: "Retry"
+  zh-CN: "重试"
+common.ignore:
+  en: "Ignore"
+  zh-CN: "忽略"
+common.close:
+  en: "Close"
+  zh-CN: "关闭"
+common.copy:
+  en: "Copy"
+  zh-CN: "复制"
+common.save:
+  en: "Save"
+  zh-CN: "保存"
+common.default:
+  en: "Default"
+  zh-CN: "默认"
+common.add:
+  en: "Add"
+  zh-CN: "添加"
+common.edit:
+  en: "Edit"
+  zh-CN: "编辑"
+common.delete:
+  en: "Delete"
+  zh-CN: "删除"
+common.clear:
+  en: "Clear"
+  zh-CN: "清除"
+common.expand:
+  en: "Expand"
+  zh-CN: "展开"
+common.collapse:
+  en: "Collapse"
+  zh-CN: "收起"
+common.filter:
+  en: "Filter"
+  zh-CN: "筛选"
+common.version:
+  en: "Version"
+  zh-CN: "版本"
+common.source:
+  en: "Source"
+  zh-CN: "来源"
+common.name:
+  en: "Name"
+  zh-CN: "名称"
+common.description:
+  en: "Description"
+  zh-CN: "描述"
+common.actions:
+  en: "Actions"
+  zh-CN: "操作"
+common.bucket:
+  en: "Bucket"
+  zh-CN: "Bucket"
+common.loading:
+  en: "Loading…"
+  zh-CN: "正在加载…"
+
+# Installed
+installed.empty:
+  en: "No packages installed yet"
+  zh-CN: "还没有已安装的包"
+installed.allLatest:
+  en: "All apps are up to date"
+  zh-CN: "所有应用都是最新的"
+installed.noMatch:
+  en: "No matching apps"
+  zh-CN: "没有匹配的应用"
+installed.filterPlaceholder:
+  en: "Filter by name or description"
+  zh-CN: "筛选名称或描述"
+installed.filterActive:
+  en: "Filter (%{count})"
+  zh-CN: "筛选（%{count}）"
+installed.status:
+  en: "Update status"
+  zh-CN: "更新状态"
+installed.source:
+  en: "Source"
+  zh-CN: "来源"
+installed.updateFiltered:
+  en: "Update filtered (%{count})"
+  zh-CN: "更新筛选结果（%{count}）"
+installed.updateAll:
+  en: "Update all (%{count})"
+  zh-CN: "全部更新（%{count}）"
+installed.table:
+  en: "Installed apps"
+  zh-CN: "已安装的应用"
+installed.viewDetails:
+  en: "View details for %{name}"
+  zh-CN: "查看 %{name} 的详情"
+installed.clickDetails:
+  en: "Click for details"
+  zh-CN: "点击查看详情"
+installed.loading:
+  en: "Reading installed apps…"
+  zh-CN: "正在读取已安装的应用…"
+installed.emptyHint:
+  en: "Install your first package from the Search tab."
+  zh-CN: "去搜索页安装第一个包。"
+installed.goSearch:
+  en: "Go to Search"
+  zh-CN: "去搜索"
+source.all:
+  en: "All (%{count})"
+  zh-CN: "全部（%{count}）"
+source.unknown:
+  en: "Unknown source (%{count})"
+  zh-CN: "未知来源（%{count}）"
+source.url:
+  en: "URL manifest (%{count})"
+  zh-CN: "URL 清单（%{count}）"
+source.updatable:
+  en: "Updates (%{count})"
+  zh-CN: "有更新（%{count}）"
+source.latest:
+  en: "Up to date (%{count})"
+  zh-CN: "已最新（%{count}）"
+
+# Search
+search.placeholder:
+  en: "Search by package name or description"
+  zh-CN: "输入包名或描述关键词"
+search.clear:
+  en: "Clear search"
+  zh-CN: "清空搜索"
+search.loading:
+  en: "Loading manifests…"
+  zh-CN: "正在加载清单…"
+search.catalogCount:
+  en: "%{count} installable packages"
+  zh-CN: "%{count} 个可安装包"
+search.noBuckets:
+  en: "No buckets yet. Add a manifest source first."
+  zh-CN: "还没有添加 bucket，先添加一个清单来源"
+search.startTyping:
+  en: "Type a keyword to search"
+  zh-CN: "输入关键词开始搜索"
+search.goBuckets:
+  en: "Add a Bucket"
+  zh-CN: "去添加 Bucket"
+search.table:
+  en: "Installable packages"
+  zh-CN: "可安装的包"
+search.installed:
+  en: "✓ Installed"
+  zh-CN: "✓ 已安装"
+search.matches:
+  en: "%{count} matches"
+  zh-CN: "匹配 %{count} 个"
+search.matchesLimited:
+  en: "%{count} matches; showing the first %{max}. Narrow the keyword."
+  zh-CN: "匹配 %{count} 个，只显示前 %{max} 个，请细化关键词"
+search.noMatch:
+  en: "No matching packages"
+  zh-CN: "没有匹配的包"
+search.noMatchHint:
+  en: "Try a shorter keyword, or add the matching bucket first."
+  zh-CN: "试试更短的关键词，或先添加对应的 bucket。"
+search.noCatalog:
+  en: "No packages available yet"
+  zh-CN: "还没有可安装的包"
+search.noCatalogHint:
+  en: "Add a bucket on the Bucket page first."
+  zh-CN: "先到「Bucket」页添加一个 bucket。"
+
+# Buckets
+buckets.editSource:
+  en: "Edit the source URL of %{name}"
+  zh-CN: "编辑 %{name} 的来源地址"
+buckets.sourcePlaceholder:
+  en: "Source URL"
+  zh-CN: "来源地址"
+buckets.namePlaceholder:
+  en: "Bucket name, such as extras"
+  zh-CN: "bucket 名称，如 extras"
+buckets.repoPlaceholder:
+  en: "Source URL (empty for known buckets)"
+  zh-CN: "来源地址（已知 bucket 可留空）"
+buckets.count:
+  en: "Manifests"
+  zh-CN: "清单数"
+buckets.pending:
+  en: "Not added"
+  zh-CN: "待添加"
+buckets.packages:
+  en: "%{count} packages"
+  zh-CN: "%{count} 个包"
+buckets.loading:
+  en: "Reading buckets…"
+  zh-CN: "正在读取 bucket…"
+buckets.emptyTitle:
+  en: "No buckets available"
+  zh-CN: "还没有可用的 bucket"
+buckets.emptyHint:
+  en: "Add a known bucket or a custom source above."
+  zh-CN: "在上方添加一个已知 bucket 或自定义来源。"
+buckets.table:
+  en: "Manifest sources"
+  zh-CN: "软件清单来源"
+
+# Detail sheet
+detail.title:
+  en: "Package details"
+  zh-CN: "包详情"
+detail.copyName:
+  en: "Copy package name"
+  zh-CN: "复制包名"
+detail.copied:
+  en: "Copied"
+  zh-CN: "已复制"
+detail.copiedName:
+  en: "Package name copied"
+  zh-CN: "已复制包名"
+detail.loading:
+  en: "Reading manifest…"
+  zh-CN: "正在读取清单…"
+detail.installed:
+  en: "Installed"
+  zh-CN: "已安装"
+detail.notInstalled:
+  en: "Not installed"
+  zh-CN: "未安装"
+detail.updateTo:
+  en: "Update available"
+  zh-CN: "可更新至"
+detail.homepage:
+  en: "Homepage"
+  zh-CN: "主页"
+detail.size:
+  en: "Size"
+  zh-CN: "占用"
+detail.installPath:
+  en: "Install path"
+  zh-CN: "安装路径"
+detail.license:
+  en: "License"
+  zh-CN: "许可证"
+detail.depends:
+  en: "Depends on"
+  zh-CN: "依赖"
+detail.suggest:
+  en: "Suggests"
+  zh-CN: "建议"
+detail.downloadUrl:
+  en: "Download URL"
+  zh-CN: "下载地址"
+detail.notes:
+  en: "Notes"
+  zh-CN: "备注"
+detail.manifest:
+  en: "Manifest"
+  zh-CN: "清单"
+
+# Queue and jobs
+queue.title:
+  en: "Download queue"
+  zh-CN: "下载队列"
+queue.count:
+  en: "Queue (%{count})"
+  zh-CN: "队列（%{count}）"
+queue.hint:
+  en: "Up to 3 downloads run at once; installs run one by one"
+  zh-CN: "下载最多 3 个并行，安装逐个进行"
+queue.open:
+  en: "Expand download queue"
+  zh-CN: "展开下载队列"
+queue.close:
+  en: "Collapse download queue"
+  zh-CN: "收起下载队列"
+queue.downloadingStage:
+  en: "Downloading · %{stage}"
+  zh-CN: "下载 · %{stage}"
+queue.downloadingPercent:
+  en: "Downloading %{percent}%"
+  zh-CN: "下载 %{percent}%"
+job.preparing:
+  en: "Fetching"
+  zh-CN: "获取中"
+job.waiting:
+  en: "Queued"
+  zh-CN: "排队中"
+job.ready:
+  en: "Ready to install"
+  zh-CN: "待安装"
+job.uninstalling:
+  en: "Uninstalling"
+  zh-CN: "卸载中"
+job.failed:
+  en: "Failed"
+  zh-CN: "失败"
+job.cancelQueue:
+  en: "Cancel the queued job for %{name}"
+  zh-CN: "取消 %{name} 的排队"
+job.cancelInstall:
+  en: "Cancel the install of %{name}"
+  zh-CN: "取消 %{name} 的安装"
+job.cancelDownload:
+  en: "Cancel the download of %{name}"
+  zh-CN: "取消 %{name} 的下载"
+job.ignoreFailure:
+  en: "Ignore the failure of %{name}"
+  zh-CN: "忽略 %{name} 的失败"
+
+# Stages
+stage.preparing:
+  en: "Preparing"
+  zh-CN: "准备"
+stage.downloading:
+  en: "Downloading"
+  zh-CN: "下载"
+stage.verifying:
+  en: "Verifying"
+  zh-CN: "校验"
+stage.extracting:
+  en: "Extracting"
+  zh-CN: "解压"
+stage.finalizing:
+  en: "Finalizing"
+  zh-CN: "收尾"
+stage.waiting:
+  en: "Waiting for data"
+  zh-CN: "等待数据"
+stage.working:
+  en: "Working"
+  zh-CN: "处理中"
+ui.busy:
+  en: "Working"
+  zh-CN: "正在处理"
+ui.clear:
+  en: "Clear"
+  zh-CN: "清空"
+
+# Deck actions
+deck.contextError:
+  en: "ScoopDeck must be rendered inside DeckContext.Provider"
+  zh-CN: "ScoopDeck 必须在 DeckContext.Provider 内渲染"
+deck.installTitle:
+  en: "Install %{name}?"
+  zh-CN: "安装 %{name}？"
+deck.installDesc:
+  en: "Version %{version} from the %{bucket} bucket, %{size}. It joins the queue after you confirm, and you can cancel it at any time."
+  zh-CN: "来自 %{bucket} bucket 的 %{version}，%{size}。确认后加入队列，过程中可以随时取消。"
+deck.sizeKnown:
+  en: "about %{size} to download"
+  zh-CN: "需要下载约 %{size}"
+deck.sizeUnknown:
+  en: "download size unknown (depends on the mirror or network)"
+  zh-CN: "下载大小未知（由镜像或网络决定）"
+deck.updateTitle:
+  en: "Update %{name}?"
+  zh-CN: "更新 %{name}？"
+deck.updateDesc:
+  en: "From %{from} to %{to}, %{size}. It joins the queue after you confirm, and you can cancel it at any time."
+  zh-CN: "从 %{from} 更新到 %{to}，%{size}。确认后加入队列，过程中可以随时取消。"
+deck.updateLatest:
+  en: "the latest version"
+  zh-CN: "最新版本"
+deck.updateAllTitle:
+  en: "Update %{count} apps?"
+  zh-CN: "更新 %{count} 个应用？"
+deck.updateAllDesc:
+  en: "Updates run in order: %{names}%{more}. Up to 3 downloads run at once; installs run one by one. You can cancel during the download."
+  zh-CN: "将依次更新：%{names}%{more}。下载最多 3 个并行，安装逐个进行；下载阶段可取消。"
+deck.updateAllMore:
+  en: " and more"
+  zh-CN: " 等"
+deck.listSeparator:
+  en: ", "
+  zh-CN: "、"
+queue.batchSeparator:
+  en: ", "
+  zh-CN: "，"
+deck.startUpdate:
+  en: "Start update"
+  zh-CN: "开始更新"
+deck.uninstallTitle:
+  en: "Confirm uninstall"
+  zh-CN: "确认卸载"
+deck.uninstallDesc:
+  en: "Uninstall %{name}? This cannot be undone."
+  zh-CN: "确定要卸载 %{name} 吗？此操作不可撤销。"
+deck.bucketRemoveTitle:
+  en: "Delete bucket"
+  zh-CN: "删除 bucket"
+deck.bucketRemoveDesc:
+  en: "Delete the bucket %{name}? Its manifests are removed from this machine; installed packages stay. You can add it again later."
+  zh-CN: "确定要删除 bucket %{name} 吗？会从本机移除它的清单，已安装的包不会被卸载；之后可以重新添加。"
+
+# Queue notifications
+queue.doneInstall:
+  en: "Installed %{name}"
+  zh-CN: "已安装 %{name}"
+queue.doneUpdate:
+  en: "Updated %{name}"
+  zh-CN: "已更新 %{name}"
+queue.doneUninstall:
+  en: "Uninstalled %{name}"
+  zh-CN: "已卸载 %{name}"
+queue.batch:
+  en: "Batch finished: %{parts}"
+  zh-CN: "批量完成：%{parts}"
+queue.batchOk:
+  en: "%{count} succeeded"
+  zh-CN: "%{count} 个成功"
+queue.batchFailed:
+  en: "%{count} failed"
+  zh-CN: "%{count} 个失败"
+
+# Settings
+settings.section.appearance:
+  en: "Appearance"
+  zh-CN: "外观"
+settings.section.download:
+  en: "Download"
+  zh-CN: "下载"
+settings.section.install:
+  en: "Install"
+  zh-CN: "安装"
+settings.section.update:
+  en: "Update"
+  zh-CN: "更新"
+settings.section.advanced:
+  en: "Advanced"
+  zh-CN: "高级"
+settings.section.backup:
+  en: "Backup"
+  zh-CN: "备份"
+settings.section.cache:
+  en: "Cache"
+  zh-CN: "缓存"
+settings.section.about:
+  en: "About"
+  zh-CN: "关于"
+settings.loading:
+  en: "Reading Scoop settings…"
+  zh-CN: "正在读取 Scoop 设置…"
+settings.theme:
+  en: "Theme"
+  zh-CN: "主题"
+settings.themeHint:
+  en: "Light, dark, or follow Windows' appearance"
+  zh-CN: "浅色、深色，或跟随 Windows 的外观设置"
+settings.themeSystem:
+  en: "Follow system"
+  zh-CN: "跟随系统"
+settings.themeLight:
+  en: "Light"
+  zh-CN: "浅色"
+settings.themeDark:
+  en: "Dark"
+  zh-CN: "深色"
+settings.language:
+  en: "Language"
+  zh-CN: "语言"
+settings.languageHint:
+  en: "Follow Windows, or use Simplified Chinese / English"
+  zh-CN: "跟随 Windows，或固定简体中文 / English"
+settings.languageSystem:
+  en: "Follow system"
+  zh-CN: "跟随系统"
+settings.languageZh:
+  en: "简体中文"
+  zh-CN: "简体中文"
+settings.languageEn:
+  en: "English"
+  zh-CN: "English"
+settings.aria2:
+  en: "aria2 acceleration"
+  zh-CN: "aria2 加速"
+settings.aria2Hint:
+  en: "Download large files faster with aria2 (aria2 must be installed)"
+  zh-CN: "用 aria2 多线程下载，大文件更快（需要已安装 aria2）"
+settings.aria2Fallback:
+  en: "aria2 fallback"
+  zh-CN: "aria2 失败回退"
+settings.aria2FallbackHint:
+  en: "Fall back to the built-in downloader when aria2 fails instead of erroring out"
+  zh-CN: "aria2 出错时自动改用内置下载器，而不是直接报错"
+settings.proxy:
+  en: "Proxy"
+  zh-CN: "代理"
+settings.proxyHint:
+  en: "default / none / currentuser / host:port; leave empty to use the system proxy"
+  zh-CN: "default / none / currentuser / host:port；留空用系统代理"
+settings.proxyPlaceholder:
+  en: "default"
+  zh-CN: "default"
+settings.githubProxy:
+  en: "GitHub download proxy"
+  zh-CN: "GitHub 下载代理"
+settings.githubProxyHint:
+  en: "For example https://ghproxy.net/; only accelerates GitHub manifests and prefetches; leave empty for direct access"
+  zh-CN: "例如 https://ghproxy.net/；只加速 GitHub 的清单和预下载，留空直连"
+settings.defaultArch:
+  en: "Default architecture"
+  zh-CN: "默认架构"
+settings.defaultArchHint:
+  en: "Preferred architecture when installing; Follow system uses this computer's"
+  zh-CN: "安装时优先选择的架构；跟随系统则用计算机本身的"
+settings.defaultArchSystem:
+  en: "Follow system"
+  zh-CN: "跟随系统"
+settings.shim:
+  en: "Shim implementation"
+  zh-CN: "shim 实现"
+settings.shimHint:
+  en: "How command shims are built; rebuilt shims take effect only after rebuilding"
+  zh-CN: "命令包装器的实现；换掉后已建的 shim 需要重建才生效"
+settings.shim7zip:
+  en: "7zip version"
+  zh-CN: "7zip 版"
+settings.external7zip:
+  en: "External 7-Zip"
+  zh-CN: "外部 7-Zip"
+settings.external7zipHint:
+  en: "Extract with the installed 7z.exe, faster than the built-in extractor"
+  zh-CN: "用系统已装的 7z.exe 解压，比内置解压更快"
+settings.lessmsi:
+  en: "lessmsi"
+  zh-CN: "lessmsi"
+settings.lessmsiHint:
+  en: "Extract MSI files with lessmsi so their files are easier to inspect"
+  zh-CN: "用 lessmsi 解 msi，便于取出安装包里的文件"
+settings.noJunction:
+  en: "Do not use current links"
+  zh-CN: "不使用 current 链接"
+settings.noJunctionHint:
+  en: "Point shims and shortcuts at the version directory; only affects apps installed later"
+  zh-CN: "让 shim 和快捷方式直接指向具体版本目录；只影响之后安装的应用"
+settings.ignoreRunning:
+  en: "Ignore running processes"
+  zh-CN: "忽略运行中的进程"
+settings.ignoreRunningHint:
+  en: "Continue updating or uninstalling even if the app is running (it aborts by default)"
+  zh-CN: "升级或卸载时即使目标应用正在运行也继续（默认会中止）"
+settings.updateScoop:
+  en: "Update Scoop and buckets"
+  zh-CN: "更新 Scoop 和 bucket"
+settings.updating:
+  en: "Updating…"
+  zh-CN: "更新中…"
+settings.updateNow:
+  en: "Update now"
+  zh-CN: "立即更新"
+settings.lastUpdatedNever:
+  en: "Last updated: never"
+  zh-CN: "上次更新：从未"
+settings.lastUpdated:
+  en: "Last updated: %{time}"
+  zh-CN: "上次更新：%{time}"
+settings.repo:
+  en: "Scoop repository"
+  zh-CN: "Scoop 仓库"
+settings.repoHint:
+  en: "Scoop's own source repository; can point to a mirror"
+  zh-CN: "Scoop 自身的源码仓库，可换成镜像地址"
+settings.branch:
+  en: "Scoop branch"
+  zh-CN: "Scoop 分支"
+settings.branchHint:
+  en: "master is stable; develop gets new features earlier"
+  zh-CN: "master 稳定版；develop 提前拿到新功能"
+settings.nightly:
+  en: "Update nightly"
+  zh-CN: "更新 nightly"
+settings.nightlyHint:
+  en: "Allow nightly versions to update after one day"
+  zh-CN: "允许 nightly 版本在一天后被更新"
+settings.forceUpdate:
+  en: "Force update"
+  zh-CN: "强制更新"
+settings.forceUpdateHint:
+  en: "Reinstall from the bucket manifest even when the version is unchanged"
+  zh-CN: "即使版本号相同，也按 bucket 里的清单重装"
+settings.gitHistory:
+  en: "Search git history"
+  zh-CN: "查 git 历史"
+settings.gitHistoryHint:
+  en: "Look for old manifests in the bucket's git history when installing a versioned release"
+  zh-CN: "安装带版本号的旧版本时，先在 bucket 的 git 历史里找清单"
+settings.autostash:
+  en: "Stash on conflict"
+  zh-CN: "冲突时自动 stash"
+settings.autostashHint:
+  en: "Stash local changes automatically when updating a bucket instead of aborting"
+  zh-CN: "更新 bucket 遇到本地改动时自动暂存，而不是直接中止"
+settings.debug:
+  en: "Debug output"
+  zh-CN: "调试输出"
+settings.debugHint:
+  en: "Print more detailed Scoop logs, useful when diagnosing failures"
+  zh-CN: "让 Scoop 打印更详细的日志，排查失败原因时有用"
+settings.exportTitle:
+  en: "Export to file"
+  zh-CN: "导出到文件"
+settings.exportHint:
+  en: "Choose a directory and save a Scoopfile"
+  zh-CN: "点击导出后选择目录，保存成 Scoopfile"
+settings.copyPath:
+  en: "Copy path"
+  zh-CN: "复制路径"
+settings.export:
+  en: "Export"
+  zh-CN: "导出"
+settings.importTitle:
+  en: "Import from file"
+  zh-CN: "从文件导入"
+settings.importHint:
+  en: "Choose a Scoopfile to install missing apps and add buckets"
+  zh-CN: "点击导入后选择 Scoopfile，安装缺失的应用、添加 bucket"
+settings.import:
+  en: "Import"
+  zh-CN: "导入"
+settings.importing:
+  en: "Importing…"
+  zh-CN: "导入中…"
+settings.token:
+  en: "GitHub token"
+  zh-CN: "GitHub token"
+settings.tokenHint:
+  en: "For private repositories and avoiding GitHub API limits; write-only, never shown"
+  zh-CN: "私有仓库、避开 GitHub API 限流用；只写入配置，不回显"
+settings.tokenSet:
+  en: "Set; enter a new value to replace it"
+  zh-CN: "已设置，输入新值可覆盖"
+settings.tokenUnset:
+  en: "Not set"
+  zh-CN: "未设置"
+settings.cacheSummary:
+  en: "%{size} · %{count} files"
+  zh-CN: "%{size} · %{count} 个文件"
+settings.cleanupOld:
+  en: "Clean old versions"
+  zh-CN: "清理旧版本"
+settings.clearCache:
+  en: "Clear cache"
+  zh-CN: "清理缓存"
+settings.appVersion:
+  en: "ScoopDeck version"
+  zh-CN: "ScoopDeck 版本"
+settings.devVersion:
+  en: " (development)"
+  zh-CN: "（开发版）"
+settings.scoopVersion:
+  en: "Scoop version"
+  zh-CN: "Scoop 版本"
+settings.root:
+  en: "Root directory"
+  zh-CN: "根目录"
+settings.global:
+  en: "Global directory"
+  zh-CN: "全局目录"
+settings.config:
+  en: "Config file"
+  zh-CN: "配置文件"
+settings.notify.exported:
+  en: "Exported to %{path}"
+  zh-CN: "已导出到 %{path}"
+settings.notify.pathCopied:
+  en: "Path copied"
+  zh-CN: "路径已复制"
+settings.notify.imported:
+  en: "Import finished"
+  zh-CN: "导入完成"
+settings.notify.updated:
+  en: "Scoop and buckets updated"
+  zh-CN: "Scoop 与 bucket 已更新"
+settings.notify.cleaned:
+  en: "Old versions cleaned"
+  zh-CN: "旧版本已清理"
+settings.importConfirmTitle:
+  en: "Import from a Scoopfile?"
+  zh-CN: "从 Scoopfile 导入？"
+settings.importConfirmDesc:
+  en: "This uses %{path} to install missing apps and add their buckets. It can take a long time; do not close the window or run other actions."
+  zh-CN: "将使用 %{path}，安装文件里缺少的应用、添加对应 bucket。可能需要很久，期间不要关闭窗口，也不要再执行其它操作。"
+settings.cleanupTitle:
+  en: "Clean old versions?"
+  zh-CN: "清理旧版本？"
+settings.cleanupDesc:
+  en: "Delete the old version directories kept by every app, keeping only the current version. Installed apps are not affected."
+  zh-CN: "删除所有应用保留的旧版本目录，只保留当前版本。已安装的应用不受影响。"
+settings.cleanup:
+  en: "Clean"
+  zh-CN: "清理"
+settings.clearCacheTitle:
+  en: "Clear the download cache?"
+  zh-CN: "清理下载缓存？"
+settings.clearCacheDesc:
+  en: "Delete %{count} files (about %{size}) from the cache. Installed apps are not affected; reinstalling downloads them again."
+  zh-CN: "将删除缓存里的 %{count} 个文件（约 %{size}）。已安装的应用不受影响，只是下次重装需要重新下载。"
+
+# Scoop setup
+setup.title:
+  en: "Scoop not detected"
+  zh-CN: "未检测到 Scoop"
+setup.desc:
+  en: "ScoopDeck needs Scoop installed first. After installing it, come back and press Retry; if it is still not found, restart ScoopDeck."
+  zh-CN: "ScoopDeck 需要先安装 Scoop。装好后回到这里点「重新检测」；如果仍然检测不到，重启一次 ScoopDeck。"
+setup.powershell:
+  en: "Run in PowerShell"
+  zh-CN: "在 PowerShell 中运行"
+setup.open:
+  en: "Open scoop.sh"
+  zh-CN: "打开 scoop.sh"
+setup.retry:
+  en: "Check again"
+  zh-CN: "重新检测"
+
+# Errors
+error.expand:
+  en: "Expand"
+  zh-CN: "展开"
+error.collapse:
+  en: "Collapse"
+  zh-CN: "收起"
+error.close:
+  en: "Close"
+  zh-CN: "关闭"
+error.copied:
+  en: "Error copied"
+  zh-CN: "错误信息已复制"

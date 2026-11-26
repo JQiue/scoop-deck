@@ -2,6 +2,7 @@ import type { Signal } from "nsh";
 import { Scoop, type InstallProgress } from "scoop-deck/native";
 import { MAX_DOWNLOADS } from "./ui";
 import { isCancelledError, type Job, type JobKind, type JobStatus } from "./types";
+import { t } from "./i18n";
 
 export function createQueue(input: {
   jobs: Signal<Job[]>;
@@ -176,13 +177,13 @@ export function createQueue(input: {
             notify(doneLabel(job));
           }
         } else {
-          const parts = [`${batch.ok} 个成功`];
+          const parts = [t("queue.batchOk", { count: batch.ok })];
 
           if (batch.failed > 0) {
-            parts.push(`${batch.failed} 个失败`);
+            parts.push(t("queue.batchFailed", { count: batch.failed }));
           }
 
-          notify(`批量完成：${parts.join("，")}`);
+          notify(t("queue.batch", { parts: parts.join(t("queue.batchSeparator")) }));
         }
 
         batch = { ok: 0, failed: 0, total: 0 };
@@ -193,11 +194,11 @@ export function createQueue(input: {
   function doneLabel(job: { name: string; kind: JobKind }): string {
     switch (job.kind) {
       case "install":
-        return `已安装 ${job.name}`;
+        return t("queue.doneInstall", { name: job.name });
       case "update":
-        return `已更新 ${job.name}`;
+        return t("queue.doneUpdate", { name: job.name });
       default:
-        return `已卸载 ${job.name}`;
+        return t("queue.doneUninstall", { name: job.name });
     }
   }
 

@@ -7,6 +7,7 @@ import {
   windowSize,
 } from "nsh";
 import { IconButton, Input, Progress } from "./omarchy";
+import { t } from "./i18n";
 
 // 窗口窄到这个宽度以下时，表格改成卡片、设置项改成上下排布。
 export const COMPACT_WIDTH = 900;
@@ -61,7 +62,7 @@ export function TextField(props: {
         <IconButton
           icon="x"
           size="small"
-          label={props.clearLabel ?? "清空"}
+          label={props.clearLabel ?? t("ui.clear")}
           onPress={() => props.onClear?.()}
         />
       </If>
@@ -95,23 +96,23 @@ export function formatBytes(bytes: number): string {
 export function stageLabel(stage: string): string {
   switch (stage) {
     case "preparing":
-      return "准备";
+      return t("stage.preparing");
     case "downloading":
-      return "下载";
+      return t("stage.downloading");
     case "verifying":
-      return "校验";
+      return t("stage.verifying");
     case "extracting":
-      return "解压";
+      return t("stage.extracting");
     case "finalizing":
-      return "收尾";
+      return t("stage.finalizing");
     case "waiting":
-      return "等待数据";
+      return t("stage.waiting");
     default:
-      return "处理中";
+      return t("stage.working");
   }
 }
 
 /** 不确定进度的小动画。 */
 export function Busy() {
-  return <Progress indeterminate label="正在处理" />;
+  return <Progress indeterminate label={t("ui.busy")} />;
 }

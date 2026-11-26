@@ -19,6 +19,7 @@ import {
 } from "./ui";
 import { JobSlot, PreparingButton } from "./JobSlot";
 import { TAB_BUCKETS, useDeck } from "./deck";
+import { t } from "./i18n";
 
 export function SearchTab() {
   const {
@@ -49,12 +50,12 @@ export function SearchTab() {
           <If when={!preparing().includes(app.name)}>
             <If when={installedNames().has(app.name)}>
               <Text class="text-xs text-muted-foreground">
-                ✓ 已安装
+                {t("search.installed")}
               </Text>
             </If>
             <If when={!installedNames().has(app.name)}>
               <Button
-                label="安装"
+                label={t("common.install")}
                 variant="primary"
                 size="small"
                 onPress={() => void installApp(app)}
@@ -73,8 +74,8 @@ export function SearchTab() {
           testID="search-input"
           style={{ width: FIELD_W }}
           value={query()}
-          placeholder="输入包名或描述关键词"
-          clearLabel="清空搜索"
+          placeholder={t("search.placeholder")}
+          clearLabel={t("search.clear")}
           onClear={() => query.set("")}
           onChange={(value) => query.set(value)}
         />
@@ -85,19 +86,19 @@ export function SearchTab() {
           <EmptyState
             title={
               loadingCatalog()
-                ? "正在加载清单…"
-                : `${catalog().length} 个可安装包`
+                ? t("search.loading")
+                : t("search.catalogCount", { count: catalog().length })
             }
             description={
               !loadingCatalog() && catalog().length === 0
-                ? "还没有添加 bucket，先添加一个清单来源"
-                : "输入关键词开始搜索"
+                ? t("search.noBuckets")
+                : t("search.startTyping")
             }
             icon="search"
           >
             <If when={!loadingCatalog() && catalog().length === 0}>
               <Button
-                label="去添加 Bucket"
+                label={t("search.goBuckets")}
                 variant="primary"
                 icon="folder"
                 onPress={() => tab.set(TAB_BUCKETS)}
@@ -110,14 +111,14 @@ export function SearchTab() {
         <Scroll class="flex-1" contentStyle={{ padding: 16 }}>
           <If when={!compact()}>
             <View class={SURFACE}>
-              <Table accessibilityLabel="可安装的包">
+              <Table accessibilityLabel={t("search.table")}>
                 <TableHeader>
                   <TableRow class="flex-row items-center gap-3 border-b border-border bg-muted px-3 py-2">
-                    <TableHead class="flex-1"><Text class={HEAD}>名称</Text></TableHead>
-                    <TableHead class="flex-1"><Text class={HEAD}>版本</Text></TableHead>
-                    <TableHead class="flex-1"><Text class={HEAD}>bucket</Text></TableHead>
-                    <TableHead style={{ flex: 2 }}><Text class={HEAD}>描述</Text></TableHead>
-                    <TableHead class="flex-1"><Text class={HEAD}>操作</Text></TableHead>
+                    <TableHead class="flex-1"><Text class={HEAD}>{t("common.name")}</Text></TableHead>
+                    <TableHead class="flex-1"><Text class={HEAD}>{t("common.version")}</Text></TableHead>
+                    <TableHead class="flex-1"><Text class={HEAD}>{t("common.bucket")}</Text></TableHead>
+                    <TableHead style={{ flex: 2 }}><Text class={HEAD}>{t("common.description")}</Text></TableHead>
+                    <TableHead class="flex-1"><Text class={HEAD}>{t("common.actions")}</Text></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -127,7 +128,9 @@ export function SearchTab() {
                         <TableCell class="flex-1">
                           <View
                             class="active:opacity-60"
-                            accessibilityLabel={`查看 ${item().name} 的详情`}
+                            accessibilityLabel={t("installed.viewDetails", {
+                              name: item().name,
+                            })}
                             onPress={() => void openDetails(item().name)}
                           >
                             <Text
@@ -174,7 +177,9 @@ export function SearchTab() {
                     <View class="flex-row items-start gap-2">
                       <View
                         class="flex-1 active:opacity-60"
-                        accessibilityLabel={`查看 ${item().name} 的详情`}
+                        accessibilityLabel={t("installed.viewDetails", {
+                          name: item().name,
+                        })}
                         onPress={() => void openDetails(item().name)}
                       >
                         <Text
@@ -189,7 +194,7 @@ export function SearchTab() {
                       </Text>
                     </View>
                     <View class="flex-row items-center gap-2">
-                      <Text class="text-xs text-muted-foreground">版本</Text>
+                      <Text class="text-xs text-muted-foreground">{t("common.version")}</Text>
                       <Text class={CELL}>{item().version}</Text>
                     </View>
                     <If when={item().description !== ""}>
@@ -208,20 +213,20 @@ export function SearchTab() {
           </If>
           <If when={loadingCatalog()}>
             <Text class="py-8 text-center text-sm text-muted-foreground">
-              正在加载清单…
+              {t("search.loading")}
             </Text>
           </If>
           <If when={!loadingCatalog() && matched().length === 0}>
             <EmptyState
-              title="没有匹配的包"
-              description="试试更短的关键词，或先添加对应的 bucket。"
+              title={t("search.noMatch")}
+              description={t("search.noMatchHint")}
               icon="search"
             />
           </If>
           <If when={!loadingCatalog() && catalog().length === 0}>
             <EmptyState
-              title="还没有可安装的包"
-              description="先到「Bucket」页添加一个 bucket。"
+              title={t("search.noCatalog")}
+              description={t("search.noCatalogHint")}
               icon="folder"
             />
           </If>

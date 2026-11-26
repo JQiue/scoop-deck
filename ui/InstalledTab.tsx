@@ -27,6 +27,7 @@ import {
 import { JobSlot, PreparingButton } from "./JobSlot";
 import { TAB_SEARCH, useDeck } from "./deck";
 import { InstalledStatus, isUrlSource } from "./types";
+import { t } from "./i18n";
 
 export function InstalledTab() {
   const {
@@ -78,7 +79,7 @@ export function InstalledTab() {
           <If when={!preparing().includes(app.name)}>
             <If when={hasUpdate(app)}>
               <Button
-                label="更新"
+                label={t("common.update")}
                 size="small"
                 onPress={() => void updateApp(app)}
               />
@@ -88,7 +89,7 @@ export function InstalledTab() {
         <JobSlot name={app.name} kind="uninstall" />
         <If when={!jobOf(app.name, "uninstall")}>
           <Button
-            label="卸载"
+            label={t("common.uninstall")}
             size="small"
             variant="danger"
             onPress={() => void uninstallApp(app.name)}
@@ -106,20 +107,22 @@ export function InstalledTab() {
             <TextField
               style={{ width: FIELD_W }}
               value={installedQuery()}
-              placeholder="筛选名称或描述"
+              placeholder={t("installed.filterPlaceholder")}
               onClear={() => installedQuery.set("")}
               onChange={(value) => installedQuery.set(value)}
             />
             <Popover
               placement="bottom"
               align="start"
-              title="筛选"
+              title={t("common.filter")}
               trigger={
                 <Button
                   label={
                     filtersActive()
-                      ? `筛选（${activeFilterCount()}）`
-                      : "筛选"
+                      ? t("installed.filterActive", {
+                          count: activeFilterCount(),
+                        })
+                      : t("common.filter")
                   }
                   variant={filtersActive() ? "primary" : "default"}
                   icon="funnel"
@@ -128,7 +131,7 @@ export function InstalledTab() {
             >
               <View class="gap-3">
                 <View class="gap-1.5">
-                  <Text class={HEAD}>更新状态</Text>
+                  <Text class={HEAD}>{t("installed.status")}</Text>
                   <View class="flex-row flex-wrap gap-1">
                     <Each of={statusOptions()} key={(option) => option.value}>
                       {(option) => (
@@ -147,7 +150,7 @@ export function InstalledTab() {
                   </View>
                 </View>
                 <View class="gap-1.5">
-                  <Text class={HEAD}>来源</Text>
+                  <Text class={HEAD}>{t("installed.source")}</Text>
                   <View class="flex-row flex-wrap gap-1">
                     <Each of={bucketOptions()} key={(option) => option.value}>
                       {(option) => (
@@ -168,8 +171,10 @@ export function InstalledTab() {
             <Button
               label={
                 filtersActive()
-                  ? `更新筛选结果（${visibleUpdatable().length}）`
-                  : `全部更新（${updatable().length}）`
+                  ? t("installed.updateFiltered", {
+                      count: visibleUpdatable().length,
+                    })
+                  : t("installed.updateAll", { count: updatable().length })
               }
               variant="primary"
               icon="arrow-up"
@@ -181,14 +186,14 @@ export function InstalledTab() {
       <Scroll class="flex-1" contentStyle={{ padding: 16 }}>
         <If when={!compact()}>
           <View class={SURFACE}>
-            <Table accessibilityLabel="已安装的应用">
+            <Table accessibilityLabel={t("installed.table")}>
               <TableHeader>
                 <TableRow class="flex-row items-center gap-3 border-b border-border bg-muted px-3 py-2">
-                  <TableHead class="flex-1"><Text class={HEAD}>名称</Text></TableHead>
-                  <TableHead style={{ flex: 1.3 }}><Text class={HEAD}>版本</Text></TableHead>
-                  <TableHead class="flex-1"><Text class={HEAD}>来源</Text></TableHead>
-                  <TableHead style={{ flex: 2 }}><Text class={HEAD}>描述</Text></TableHead>
-                  <TableHead class="flex-1"><Text class={HEAD}>操作</Text></TableHead>
+                  <TableHead class="flex-1"><Text class={HEAD}>{t("common.name")}</Text></TableHead>
+                  <TableHead style={{ flex: 1.3 }}><Text class={HEAD}>{t("common.version")}</Text></TableHead>
+                  <TableHead class="flex-1"><Text class={HEAD}>{t("installed.source")}</Text></TableHead>
+                  <TableHead style={{ flex: 2 }}><Text class={HEAD}>{t("common.description")}</Text></TableHead>
+                  <TableHead class="flex-1"><Text class={HEAD}>{t("common.actions")}</Text></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -201,9 +206,11 @@ export function InstalledTab() {
                       <TableCell class="flex-1">
                         <View
                           class="active:opacity-60"
-                          accessibilityLabel={`查看 ${item().name} 的详情`}
+                          accessibilityLabel={t("installed.viewDetails", {
+                            name: item().name,
+                          })}
                           tooltip={
-                            <Tooltip label="点击查看详情" />
+                            <Tooltip label={t("installed.clickDetails")} />
                           }
                           onPress={() => void openDetails(item().name)}
                         >
@@ -278,7 +285,9 @@ export function InstalledTab() {
                   <View class="flex-row items-start gap-2">
                     <View
                       class="flex-1 active:opacity-60"
-                      accessibilityLabel={`查看 ${item().name} 的详情`}
+                      accessibilityLabel={t("installed.viewDetails", {
+                        name: item().name,
+                      })}
                       onPress={() => void openDetails(item().name)}
                     >
                       <Text
@@ -311,7 +320,7 @@ export function InstalledTab() {
                     </If>
                   </View>
                   <View class="flex-row flex-wrap items-center gap-2">
-                    <Text class="text-xs text-muted-foreground">版本</Text>
+                    <Text class="text-xs text-muted-foreground">{t("common.version")}</Text>
                     <Text class={CELL}>{item().installedVersion}</Text>
                     <If when={hasUpdate(item())}>
                       <Text class="text-sm text-muted-foreground">→</Text>
@@ -336,18 +345,20 @@ export function InstalledTab() {
         </If>
         <If when={loadingApps() && apps().length === 0}>
           <Text class="py-8 text-center text-sm text-muted-foreground">
-            正在读取已安装的应用…
+            {t("installed.loading")}
           </Text>
         </If>
         <If when={!loadingApps() && listedApps().length === 0}>
           <EmptyState
             title={emptyText()}
-            description={apps().length === 0 ? "去搜索页安装第一个包。" : null}
+            description={
+              apps().length === 0 ? t("installed.emptyHint") : null
+            }
             icon="inbox"
           >
             <If when={apps().length === 0}>
               <Button
-                label="去搜索"
+                label={t("installed.goSearch")}
                 variant="primary"
                 icon="search"
                 onPress={() => tab.set(TAB_SEARCH)}

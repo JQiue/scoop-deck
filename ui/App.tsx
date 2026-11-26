@@ -27,6 +27,7 @@ import { ErrorToast } from "./ErrorBanner";
 import { QueueDock } from "./QueueDock";
 import { ScoopSetup } from "./ScoopSetup";
 import { SettingsTab } from "./SettingsTab";
+import { startLanguage, t } from "./i18n";
 import { startTheme } from "./theme";
 import { PLACEMENT_KEY } from "./ui";
 
@@ -46,6 +47,7 @@ function App() {
   const deck = createDeck();
   const { tab, scoopAvailable } = deck;
 
+  startLanguage();
   startTheme();
 
   function selectTab(value: string) {
@@ -146,7 +148,7 @@ function App() {
     const count = jobs.length;
 
     if (count === 0) {
-      return "ScoopDeck";
+      return t("tray.tooltipIdle");
     }
 
     const running = jobs.find(
@@ -155,14 +157,16 @@ function App() {
     const activity = running
       ? `${running.name} ${
           running.status === "downloading"
-            ? "下载中"
+            ? t("tray.downloading")
             : running.kind === "uninstall"
-              ? "卸载中"
-              : "安装中"
+              ? t("tray.uninstalling")
+              : t("tray.installing")
         }`
       : "";
 
-    return `ScoopDeck · ${activity ? `${activity} · ` : ""}队列 ${count}`;
+    return activity
+      ? t("tray.tooltip", { activity, count })
+      : `ScoopDeck · ${t("tray.queue", { count })}`;
   });
 
   effect(() => {
@@ -173,14 +177,17 @@ function App() {
       icon: trayIcon,
       tooltip,
       menu: [
-        { label: "显示", onSelect: showMainWindow },
+        { label: t("tray.show"), onSelect: showMainWindow },
         {
-          label: count > 0 ? `队列（${count}）` : "队列为空",
+          label:
+            count > 0
+              ? t("tray.queue", { count })
+              : t("tray.queueEmpty"),
           disabled: count === 0,
           onSelect: showMainWindow,
         },
         { type: "separator" },
-        { label: "退出", onSelect: () => Application.quit() },
+        { label: t("tray.quit"), onSelect: () => Application.quit() },
       ],
       onClick: showMainWindow,
     });
@@ -203,7 +210,7 @@ function App() {
       >
         <If when={scoopAvailable() === null}>
           <View class="flex-1 items-center justify-center">
-            <Text class="text-sm text-muted-foreground">正在检查 Scoop…</Text>
+            <Text class="text-sm text-muted-foreground">{t("app.checking")}</Text>
           </View>
         </If>
         <If when={scoopAvailable() === false}>
@@ -214,31 +221,31 @@ function App() {
             <Tabs
               value={TAB_VALUES[tab()]}
               variant="underline"
-              accessibilityLabel="主导航"
+              accessibilityLabel={t("app.nav")}
               onChange={({ value }) => selectTab(value)}
             >
               <Tab
                 testID="tab-installed"
                 value="installed"
-                label="已安装"
+                label={t("tabs.installed")}
                 icon="download"
               />
               <Tab
                 testID="tab-search"
                 value="search"
-                label="搜索"
+                label={t("tabs.search")}
                 icon="search"
               />
               <Tab
                 testID="tab-buckets"
                 value="buckets"
-                label="Bucket"
+                label={t("tabs.buckets")}
                 icon="folder"
               />
               <Tab
                 testID="tab-settings"
                 value="settings"
-                label="设置"
+                label={t("tabs.settings")}
                 icon="settings"
               />
             </Tabs>
@@ -282,14 +289,14 @@ function App() {
 function ErrorScreen(props: { error: unknown; reset: () => void }) {
   return (
     <View class="flex-1 items-center justify-center gap-3 bg-background p-6">
-      <Text class="text-lg font-bold text-foreground">界面加载失败</Text>
+      <Text class="text-lg font-bold text-foreground">{t("app.errorTitle")}</Text>
       <Text
         class="max-w-[680px] text-sm text-destructive"
         style={{ numberOfLines: 10 }}
       >
         {String(props.error)}
       </Text>
-      <Button label="重试" variant="primary" onPress={props.reset} />
+      <Button label={t("app.retry")} variant="primary" onPress={props.reset} />
     </View>
   );
 }

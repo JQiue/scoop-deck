@@ -27,6 +27,8 @@ No git repo, no CI.
 - `ui/DetailSheet.tsx`, `ui/QueueDock.tsx`, `ui/JobSlot.tsx`, `ui/ErrorBanner.tsx` — detail/queue/notice UI.
 - `ui/omarchy.ts` — the only place that re-exports the components of the installed `nsh-omarchy` nshm. Import UI controls from `./omarchy` so the surface stays in one file.
 - `ui/theme.ts` — theme preference (`system` / `light` / `dark`), persisted in nsh `Storage` under `theme.preference`; applies it with `setColorScheme`.
+- `ui/i18n.ts` — language preference (`system` / `zh-CN` / `en`), persisted in `Storage` under `language.preference`; applies it with `setLocale`.
+- `locales/app.yml` — Simplified Chinese and English copy, read by nsh's `t()`.
 - `ui/types.ts` — shared types, constants, update/cancel predicates.
 - `ui/ui.tsx` — shared class strings and helpers (`Busy`, `formatBytes`, `stageLabel`).
 - `theme.json` — the Flexoki Light / Tokyo Night tokens copied from nsh-omarchy; `nsh.json` names it.
@@ -73,7 +75,9 @@ No git repo, no CI.
 
 ## Conventions
 
-- UI copy and comments are Simplified Chinese; identifiers are English.
+- UI copy goes through `t("key")` from `ui/i18n.ts`, with keys in `locales/app.yml` for both `zh-CN` and `en`; comments stay in Simplified Chinese, identifiers in English. Dynamic text uses `%{name}` placeholders, not string concatenation.
+- The app's language follows Windows by default; Settings stores an explicit `zh-CN` / `en` choice. New UI text must be added to both languages in the same commit.
+- nsh-omarchy's built-in update prompt (if enabled later) is English-only; the app's own text is not.
 - Keep files split by screen/concern; no extra abstractions beyond nsh + local signals.
 
 ## 响应式设计与跨平台适配

@@ -1,5 +1,6 @@
 import { computed } from "nsh";
 import type { ScoopApp } from "scoop-deck/native";
+import { t } from "./i18n";
 import {
   FILTER_ALL_BUCKETS,
   FILTER_UNKNOWN_BUCKET,
@@ -43,23 +44,31 @@ export function createInstalledFilters(input: {
     });
 
     return [
-      { value: FILTER_ALL_BUCKETS, title: `全部（${apps().length}）` },
+      { value: FILTER_ALL_BUCKETS, title: t("source.all", { count: apps().length }) },
       ...entries.map(([key, count]) => ({
         value: key,
         title:
           key === FILTER_UNKNOWN_BUCKET
-            ? `未知来源（${count}）`
+            ? t("source.unknown", { count })
             : key === FILTER_URL_BUCKET
-              ? `URL 清单（${count}）`
+              ? t("source.url", { count })
               : `${key}（${count}）`,
       })),
     ];
   });
   /** 更新状态筛选器的选项。 */
   const statusOptions = computed(() => [
-    { value: "all", title: `全部（${apps().length}）` },
-    { value: "updatable", title: `有更新（${updatable().length}）` },
-    { value: "latest", title: `已最新（${apps().length - updatable().length}）` },
+    { value: "all", title: t("source.all", { count: apps().length }) },
+    {
+      value: "updatable",
+      title: t("source.updatable", { count: updatable().length }),
+    },
+    {
+      value: "latest",
+      title: t("source.latest", {
+        count: apps().length - updatable().length,
+      }),
+    },
   ]);
   /** 已安装页当前显示的列表（关键词 + 更新状态 + bucket）。 */
   const listedApps = computed(() => {
@@ -111,7 +120,7 @@ export function createInstalledFilters(input: {
   /** 筛选结果为空时该说什么。 */
   const emptyText = computed(() => {
     if (apps().length === 0) {
-      return "还没有已安装的包";
+      return t("installed.empty");
     }
 
     if (
@@ -119,10 +128,10 @@ export function createInstalledFilters(input: {
       installedQuery().trim() === "" &&
       bucketFilter() === FILTER_ALL_BUCKETS
     ) {
-      return "所有应用都是最新的";
+      return t("installed.allLatest");
     }
 
-    return "没有匹配的应用";
+    return t("installed.noMatch");
   });
 
   return {

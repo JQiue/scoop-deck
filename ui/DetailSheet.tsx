@@ -3,6 +3,7 @@ import { Button, IconButton, Link, Sheet, Tooltip } from "./omarchy";
 import { CELL, formatBytes } from "./ui";
 import { useDeck } from "./deck";
 import { isUrlSource } from "./types";
+import { t } from "./i18n";
 
 function detailRow(label: string, value: string) {
   return (
@@ -47,10 +48,10 @@ export function DetailSheet() {
           closeDetails();
         }
       }}
-      title={detailName() ?? "包详情"}
+      title={detailName() ?? t("detail.title")}
       description={detail()?.description ?? null}
       placement="right"
-      closeLabel="关闭"
+      closeLabel={t("common.close")}
       footer={
         <View class="flex-row flex-wrap items-center justify-end gap-2">
           <If when={detail()}>
@@ -58,17 +59,17 @@ export function DetailSheet() {
               <View class="flex-row flex-wrap items-center justify-end gap-2">
                 <IconButton
                   icon="copy"
-                  label={copyDone() ? "已复制包名" : "复制包名"}
+                  label={copyDone() ? t("detail.copiedName") : t("detail.copyName")}
                   tooltip={
                     <Tooltip
-                      label={copyDone() ? "已复制" : "复制包名"}
+                      label={copyDone() ? t("detail.copied") : t("detail.copyName")}
                     />
                   }
                   onPress={() => void copyName(data().name)}
                 />
                 <If when={data().installedVersion === ""}>
                   <Button
-                    label="安装"
+                    label={t("common.install")}
                     variant="primary"
                     icon="download"
                     onPress={() => installFromDetails()}
@@ -81,7 +82,7 @@ export function DetailSheet() {
                   }
                 >
                   <Button
-                    label="更新"
+                    label={t("common.update")}
                     variant="primary"
                     icon="arrow-up"
                     onPress={() => updateFromDetails()}
@@ -89,7 +90,7 @@ export function DetailSheet() {
                 </If>
                 <If when={data().installedVersion !== ""}>
                   <Button
-                    label="卸载"
+                    label={t("common.uninstall")}
                     variant="danger"
                     icon="trash"
                     onPress={() => {
@@ -105,21 +106,21 @@ export function DetailSheet() {
       }
     >
       <If when={detailLoading()}>
-        <Text class="text-sm text-muted-foreground">正在读取清单…</Text>
+        <Text class="text-sm text-muted-foreground">{t("detail.loading")}</Text>
       </If>
       <If when={detail()}>
         {(data) => (
           <View class="gap-1">
-            {detailRow("版本", data().version)}
+            {detailRow(t("common.version"), data().version)}
             <If when={isUrlSource(data().bucket)}>
-              {detailLinkRow("来源", data().bucket)}
+              {detailLinkRow(t("common.source"), data().bucket)}
             </If>
             <If when={!isUrlSource(data().bucket)}>
-              {detailRow("Bucket", data().bucket || "—")}
+              {detailRow(t("common.bucket"), data().bucket || "—")}
             </If>
             <View class="flex-row items-start gap-3 border-b border-border py-1.5">
-              <Text class="w-20 text-xs text-muted-foreground">已安装</Text>
-              <Text class={CELL}>{data().installedVersion || "未安装"}</Text>
+              <Text class="w-20 text-xs text-muted-foreground">{t("detail.installed")}</Text>
+              <Text class={CELL}>{data().installedVersion || t("detail.notInstalled")}</Text>
             </View>
             <If
               when={
@@ -127,22 +128,22 @@ export function DetailSheet() {
                 data().installedVersion !== data().version
               }
             >
-              {detailRow("可更新至", data().version)}
+              {detailRow(t("detail.updateTo"), data().version)}
             </If>
             <If when={data().homepage !== ""}>
-              {detailLinkRow("主页", data().homepage)}
+              {detailLinkRow(t("detail.homepage"), data().homepage)}
             </If>
             {detailRow(
-              "占用",
+              t("detail.size"),
               data().sizeBytes > 0 ? formatBytes(data().sizeBytes) : "—",
             )}
-            {detailRow("安装路径", data().installedPath || "—")}
-            {detailRow("许可证", data().license || "—")}
-            {detailRow("依赖", data().depends || "—")}
-            {detailRow("建议", data().suggest || "—")}
-            {detailRow("下载地址", data().url || "—")}
-            {detailRow("备注", data().notes || "—")}
-            {detailRow("清单", data().manifestPath)}
+            {detailRow(t("detail.installPath"), data().installedPath || "—")}
+            {detailRow(t("detail.license"), data().license || "—")}
+            {detailRow(t("detail.depends"), data().depends || "—")}
+            {detailRow(t("detail.suggest"), data().suggest || "—")}
+            {detailRow(t("detail.downloadUrl"), data().url || "—")}
+            {detailRow(t("detail.notes"), data().notes || "—")}
+            {detailRow(t("detail.manifest"), data().manifestPath)}
           </View>
         )}
       </If>

@@ -21,6 +21,7 @@ import {
   useCompact,
 } from "./ui";
 import { useDeck } from "./deck";
+import { t } from "./i18n";
 
 interface BucketRow {
   name: string;
@@ -36,26 +37,26 @@ function bucketForm(compact: boolean) {
       {(name) => (
         <View class={compact ? "gap-2" : "flex-row items-center gap-2"}>
           <Text class="text-sm text-foreground">
-            {`编辑 ${name()} 的来源地址`}
+            {t("buckets.editSource", { name: name() })}
           </Text>
           <TextField
             testID="edit-bucket-repo"
             class={compact ? "w-full" : ""}
             style={compact ? undefined : { width: FIELD_W_REPO }}
             value={editRepo()}
-            placeholder="来源地址"
+            placeholder={t("buckets.sourcePlaceholder")}
             onClear={() => editRepo.set("")}
             onChange={(value) => editRepo.set(value)}
           />
           <View class="flex-row flex-wrap items-center gap-2">
             <Button
-              label="保存"
+              label={t("common.save")}
               variant="primary"
               disabled={isBusy() || editRepo().trim() === ""}
               onPress={() => void saveBucket()}
             />
             <Button
-              label="取消"
+              label={t("common.cancel")}
               disabled={isBusy()}
               onPress={() => editing.set(null)}
             />
@@ -86,7 +87,7 @@ function addBucketForm(compact: boolean) {
           class={compact ? "w-full" : ""}
           style={compact ? undefined : { width: FIELD_W }}
           value={newBucket()}
-          placeholder="bucket 名称，如 extras"
+          placeholder={t("buckets.namePlaceholder")}
           onClear={() => newBucket.set("")}
           onChange={(value) => newBucket.set(value)}
         />
@@ -95,13 +96,13 @@ function addBucketForm(compact: boolean) {
           class={compact ? "w-full" : ""}
           style={compact ? undefined : { width: FIELD_W_URL }}
           value={newBucketRepo()}
-          placeholder="来源地址（已知 bucket 可留空）"
+          placeholder={t("buckets.repoPlaceholder")}
           onClear={() => newBucketRepo.set("")}
           onChange={(value) => newBucketRepo.set(value)}
         />
         <View class="flex-row flex-wrap items-center gap-2">
           <Button
-            label="添加"
+            label={t("common.add")}
             variant="primary"
             icon="plus"
             disabled={isBusy() || newBucket().trim() === ""}
@@ -153,13 +154,13 @@ export function BucketsTab() {
       <View class="flex-row flex-wrap items-center gap-1">
         <If when={bucket.installed}>
           <Button
-            label="编辑"
+            label={t("common.edit")}
             size="small"
             disabled={isBusy()}
             onPress={() => startEdit(bucket)}
           />
           <Button
-            label="删除"
+            label={t("common.delete")}
             size="small"
             variant="danger"
             disabled={isBusy()}
@@ -168,7 +169,7 @@ export function BucketsTab() {
         </If>
         <If when={!bucket.installed}>
           <Button
-            label="添加"
+            label={t("common.add")}
             size="small"
             variant="primary"
             icon="plus"
@@ -189,13 +190,13 @@ export function BucketsTab() {
       <Scroll class="flex-1" contentStyle={{ padding: 16 }}>
         <If when={!compact()}>
           <View class={SURFACE}>
-            <Table accessibilityLabel="软件清单来源">
+            <Table accessibilityLabel={t("buckets.table")}>
               <TableHeader>
                 <TableRow class="flex-row items-center gap-3 border-b border-border bg-muted px-3 py-2">
-                  <TableHead class="flex-1"><Text class={HEAD}>名称</Text></TableHead>
-                  <TableHead class="flex-1"><Text class={HEAD}>清单数</Text></TableHead>
-                  <TableHead style={{ flex: 2 }}><Text class={HEAD}>来源</Text></TableHead>
-                  <TableHead class="flex-1"><Text class={HEAD}>操作</Text></TableHead>
+                  <TableHead class="flex-1"><Text class={HEAD}>{t("common.name")}</Text></TableHead>
+                  <TableHead class="flex-1"><Text class={HEAD}>{t("buckets.count")}</Text></TableHead>
+                  <TableHead style={{ flex: 2 }}><Text class={HEAD}>{t("common.source")}</Text></TableHead>
+                  <TableHead class="flex-1"><Text class={HEAD}>{t("common.actions")}</Text></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -244,8 +245,8 @@ export function BucketsTab() {
                     </Text>
                     <Text class="shrink-0 text-xs text-muted-foreground">
                       {item().installed
-                        ? `${item().appCount} 个包`
-                        : "待添加"}
+                        ? t("buckets.packages", { count: item().appCount })
+                        : t("buckets.pending")}
                     </Text>
                   </View>
                   <Text
@@ -262,13 +263,13 @@ export function BucketsTab() {
         </If>
         <If when={loadingBuckets() && bucketRows().length === 0}>
           <Text class="py-8 text-center text-sm text-muted-foreground">
-            正在读取 bucket…
+            {t("buckets.loading")}
           </Text>
         </If>
         <If when={!loadingBuckets() && bucketRows().length === 0}>
           <EmptyState
-            title="还没有可用的 bucket"
-            description="在上方添加一个已知 bucket 或自定义来源。"
+            title={t("buckets.emptyTitle")}
+            description={t("buckets.emptyHint")}
             icon="folder"
           />
         </If>

@@ -12,6 +12,7 @@ import { formatBytes } from "./ui";
 import { createInstalledFilters } from "./filters";
 import { createQueue } from "./queue";
 import { createSearch } from "./search";
+import { t } from "./i18n";
 import {
   FILTER_ALL_BUCKETS,
   TAB_INSTALLED,
@@ -293,12 +294,17 @@ export function createDeck() {
     }
 
     const ok = await confirm({
-      title: `安装 ${app.name}？`,
-      description: `来自 ${app.bucket} bucket 的 ${app.version}，${
-        size > 0 ? `需要下载约 ${formatBytes(size)}` : "下载大小未知（由镜像或网络决定）"
-      }。确认后加入队列，过程中可以随时取消。`,
-      actionLabel: "安装",
-      cancelLabel: "取消",
+      title: t("deck.installTitle", { name: app.name }),
+      description: t("deck.installDesc", {
+        bucket: app.bucket,
+        version: app.version,
+        size:
+          size > 0
+            ? t("deck.sizeKnown", { size: formatBytes(size) })
+            : t("deck.sizeUnknown"),
+      }),
+      actionLabel: t("common.install"),
+      cancelLabel: t("common.cancel"),
     });
 
     if (ok) {
@@ -312,13 +318,16 @@ export function createDeck() {
       return;
     }
 
-    const names = list.slice(0, 6).map((app) => app.name).join("、");
-    const more = list.length > 6 ? " 等" : "";
+    const names = list
+      .slice(0, 6)
+      .map((app) => app.name)
+      .join(t("deck.listSeparator"));
+    const more = list.length > 6 ? t("deck.updateAllMore") : "";
     const ok = await confirm({
-      title: `更新 ${list.length} 个应用？`,
-      description: `将依次更新：${names}${more}。下载最多 3 个并行，安装逐个进行；下载阶段可取消。`,
-      actionLabel: "开始更新",
-      cancelLabel: "取消",
+      title: t("deck.updateAllTitle", { count: list.length }),
+      description: t("deck.updateAllDesc", { names, more }),
+      actionLabel: t("deck.startUpdate"),
+      cancelLabel: t("common.cancel"),
     });
 
     if (!ok) {
@@ -348,14 +357,17 @@ export function createDeck() {
     }
 
     const ok = await confirm({
-      title: `更新 ${app.name}？`,
-      description: `从 ${app.installedVersion} 更新到 ${
-        app.latestVersion ?? "最新版本"
-      }，${
-        size > 0 ? `需要下载约 ${formatBytes(size)}` : "下载大小未知（由镜像或网络决定）"
-      }。确认后加入队列，过程中可以随时取消。`,
-      actionLabel: "更新",
-      cancelLabel: "取消",
+      title: t("deck.updateTitle", { name: app.name }),
+      description: t("deck.updateDesc", {
+        from: app.installedVersion,
+        to: app.latestVersion ?? t("deck.updateLatest"),
+        size:
+          size > 0
+            ? t("deck.sizeKnown", { size: formatBytes(size) })
+            : t("deck.sizeUnknown"),
+      }),
+      actionLabel: t("common.update"),
+      cancelLabel: t("common.cancel"),
     });
 
     if (ok) {
@@ -369,10 +381,10 @@ export function createDeck() {
     }
 
     const ok = await confirm({
-      title: "确认卸载",
-      description: `确定要卸载 ${name} 吗？此操作不可撤销。`,
-      actionLabel: "卸载",
-      cancelLabel: "取消",
+      title: t("deck.uninstallTitle"),
+      description: t("deck.uninstallDesc", { name }),
+      actionLabel: t("common.uninstall"),
+      cancelLabel: t("common.cancel"),
       tone: "danger",
     });
 
@@ -413,10 +425,10 @@ export function createDeck() {
     }
 
     const ok = await confirm({
-      title: "删除 bucket",
-      description: `确定要删除 bucket ${name} 吗？会从本机移除它的清单，已安装的包不会被卸载；之后可以重新添加。`,
-      actionLabel: "删除",
-      cancelLabel: "取消",
+      title: t("deck.bucketRemoveTitle"),
+      description: t("deck.bucketRemoveDesc", { name }),
+      actionLabel: t("common.delete"),
+      cancelLabel: t("common.cancel"),
       tone: "danger",
     });
 
@@ -540,7 +552,7 @@ export function useDeck(): Deck {
   const deck = DeckContext();
 
   if (!deck) {
-    throw new Error("ScoopDeck 必须在 DeckContext.Provider 内渲染");
+    throw new Error(t("deck.contextError"));
   }
 
   return deck;

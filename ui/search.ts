@@ -1,6 +1,7 @@
 import { computed } from "nsh";
 import type { ScoopCatalogApp } from "scoop-deck/native";
 import { MAX_RESULTS } from "./ui";
+import { t } from "./i18n";
 
 export function createSearch(input: {
   catalog: () => ScoopCatalogApp[];
@@ -62,12 +63,12 @@ export function createSearch(input: {
     const total = matched().length;
 
     if (total === 0) {
-      return "没有匹配的包";
+      return t("search.noMatch");
     }
 
     return total > MAX_RESULTS
-      ? `匹配 ${total} 个，只显示前 ${MAX_RESULTS} 个，请细化关键词`
-      : `匹配 ${total} 个`;
+      ? t("search.matchesLimited", { count: total, max: MAX_RESULTS })
+      : t("search.matches", { count: total });
   });
 
   return { matched, shown, hint };

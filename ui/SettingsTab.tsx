@@ -7,6 +7,12 @@ import {
   type ThemePreference,
 } from "./theme";
 import {
+  languagePreference,
+  setLanguagePreference,
+  t,
+  type LanguagePreference,
+} from "./i18n";
+import {
   FIELD_W_WIDE,
   formatBytes,
   TextField,
@@ -199,7 +205,7 @@ export function SettingsTab() {
     try {
       const path = await Scoop.exportConfig(dir);
       exported.set(path);
-      notify(`已导出到 ${path}`);
+      notify(t("settings.notify.exported", { path }));
     } catch (cause) {
       error.set(String(cause));
     } finally {
@@ -212,7 +218,7 @@ export function SettingsTab() {
 
     if (path) {
       await Clipboard.writeText(path);
-      notify("路径已复制");
+      notify(t("settings.notify.pathCopied"));
     }
   }
 
@@ -229,10 +235,10 @@ export function SettingsTab() {
     }
 
     const ok = await confirm({
-      title: "从 Scoopfile 导入？",
-      description: `将使用 ${path}，安装文件里缺少的应用、添加对应 bucket。可能需要很久，期间不要关闭窗口，也不要再执行其它操作。`,
-      actionLabel: "导入",
-      cancelLabel: "取消",
+      title: t("settings.importConfirmTitle"),
+      description: t("settings.importConfirmDesc", { path }),
+      actionLabel: t("settings.import"),
+      cancelLabel: t("common.cancel"),
     });
 
     if (!ok) {
@@ -245,7 +251,7 @@ export function SettingsTab() {
     try {
       await Scoop.importConfig(path);
       await refreshAfterImport();
-      notify("导入完成");
+      notify(t("settings.notify.imported"));
     } catch (cause) {
       error.set(String(cause));
     } finally {
@@ -265,7 +271,7 @@ export function SettingsTab() {
     try {
       await Scoop.updateScoop();
       await loadSettings();
-      notify("Scoop 与 bucket 已更新");
+      notify(t("settings.notify.updated"));
     } catch (cause) {
       error.set(String(cause));
     } finally {
@@ -278,10 +284,12 @@ export function SettingsTab() {
     const raw = settings()?.lastUpdate ?? "";
 
     if (!raw) {
-      return "上次更新：从未";
+      return t("settings.lastUpdatedNever");
     }
 
-    return `上次更新：${raw.replace("T", " ").slice(0, 16)}`;
+    return t("settings.lastUpdated", {
+      time: raw.replace("T", " ").slice(0, 16),
+    });
   }
 
   /** 清理所有应用的旧版本目录。 */
@@ -291,11 +299,10 @@ export function SettingsTab() {
     }
 
     const ok = await confirm({
-      title: "清理旧版本？",
-      description:
-        "删除所有应用保留的旧版本目录，只保留当前版本。已安装的应用不受影响。",
-      actionLabel: "清理",
-      cancelLabel: "取消",
+      title: t("settings.cleanupTitle"),
+      description: t("settings.cleanupDesc"),
+      actionLabel: t("settings.cleanup"),
+      cancelLabel: t("common.cancel"),
       tone: "danger",
     });
 
@@ -305,7 +312,7 @@ export function SettingsTab() {
 
     try {
       await Scoop.cleanupOldApps();
-      notify("旧版本已清理");
+      notify(t("settings.notify.cleaned"));
     } catch (cause) {
       error.set(String(cause));
     }
@@ -320,10 +327,13 @@ export function SettingsTab() {
     const size = before ? formatBytes(before.cacheBytes) : "";
 
     const ok = await confirm({
-      title: "清理下载缓存？",
-      description: `将删除缓存里的 ${before?.cacheFiles ?? 0} 个文件（约 ${size}）。已安装的应用不受影响，只是下次重装需要重新下载。`,
-      actionLabel: "清理",
-      cancelLabel: "取消",
+      title: t("settings.clearCacheTitle"),
+      description: t("settings.clearCacheDesc", {
+        count: before?.cacheFiles ?? 0,
+        size,
+      }),
+      actionLabel: t("settings.cleanup"),
+      cancelLabel: t("common.cancel"),
       tone: "danger",
     });
 
@@ -409,13 +419,13 @@ export function SettingsTab() {
           onChange={(value) => setDraft(key, value)}
         />
         <Button
-          label="保存"
+          label={t("common.save")}
           variant="primary"
           disabled={!isDirty(key, textValue(key)) || savingKey() !== null}
           onPress={() => void saveText(key, draftOf(key, textValue(key)))}
         />
         <Button
-          label="默认"
+          label={t("common.default")}
           variant="ghost"
           disabled={textValue(key) === "" || savingKey() !== null}
           onPress={() => void saveText(key, "")}
@@ -442,19 +452,39 @@ export function SettingsTab() {
     );
   }
 
-  function themeRow() {
+  function languageRow() {
     return settingRow(
-      "主题",
-      "浅色、深色，或跟随 Windows 的外观设置",
+      t("settings.language"),
+      t("settings.languageHint"),
       <Select
         class="w-[200px]"
         items={[
-          { value: "system", label: "跟随系统" },
-          { value: "light", label: "浅色" },
-          { value: "dark", label: "深色" },
+          { value: "system", label: t("settings.languageSystem") },
+          { value: "zh-CN", label: t("settings.languageZh") },
+          { value: "en", label: t("settings.languageEn") },
+        ]}
+        value={languagePreference()}
+        accessibilityLabel={t("settings.language")}
+        onChange={(event) =>
+          setLanguagePreference(event.value as LanguagePreference)
+        }
+      />,
+    );
+  }
+
+  function themeRow() {
+    return settingRow(
+      t("settings.theme"),
+      t("settings.themeHint"),
+      <Select
+        class="w-[200px]"
+        items={[
+          { value: "system", label: t("settings.themeSystem") },
+          { value: "light", label: t("settings.themeLight") },
+          { value: "dark", label: t("settings.themeDark") },
         ]}
         value={themePreference()}
-        accessibilityLabel="主题"
+        accessibilityLabel={t("settings.theme")}
         onChange={(event) =>
           setThemePreference(event.value as ThemePreference)
         }
@@ -462,10 +492,11 @@ export function SettingsTab() {
     );
   }
 
-  function tokenRow() {    const vertical = compact();
+  function tokenRow() {
+    const vertical = compact();
     return settingRow(
-      "GitHub token",
-      "私有仓库、避开 GitHub API 限流用；只写入配置，不回显",
+      t("settings.token"),
+      t("settings.tokenHint"),
       <View
         class={`flex-row flex-wrap items-center gap-2 ${
           vertical ? "w-full" : ""
@@ -476,19 +507,21 @@ export function SettingsTab() {
           style={vertical ? undefined : { width: FIELD_W_WIDE }}
           value={draftOf("gh_token", "")}
           placeholder={
-            settings()?.ghTokenSet ? "已设置，输入新值可覆盖" : "未设置"
+            settings()?.ghTokenSet
+              ? t("settings.tokenSet")
+              : t("settings.tokenUnset")
           }
           onChange={(value) => setDraft("gh_token", value)}
         />
         <Button
-          label="保存"
+          label={t("common.save")}
           variant="primary"
           disabled={draftOf("gh_token", "").trim() === "" || savingKey() !== null}
           onPress={() => void saveText("gh_token", draftOf("gh_token", ""))}
         />
         <If when={settings()?.ghTokenSet}>
           <Button
-            label="清除"
+            label={t("common.clear")}
             variant="ghost"
             disabled={savingKey() !== null}
             onPress={() => void saveText("gh_token", "")}
@@ -517,54 +550,55 @@ export function SettingsTab() {
     <Scroll class="flex-1" contentStyle={{ padding: 16 }}>
       <If when={settings() == null}>
         <Text class="py-6 text-center text-sm text-muted-foreground">
-          正在读取 Scoop 设置…
+          {t("settings.loading")}
         </Text>
       </If>
       <View class="gap-3">
         {section(
-          "外观",
+          t("settings.section.appearance"),
           <View>
             {themeRow()}
+            {languageRow()}
           </View>,
         )}
 
         {section(
-          "下载",
+          t("settings.section.download"),
           <View>
             {flagRow(
               "aria2-enabled",
-              "aria2 加速",
-              "用 aria2 多线程下载，大文件更快（需要已安装 aria2）",
+              t("settings.aria2"),
+              t("settings.aria2Hint"),
             )}
             {flagRow(
               "aria2-fallback-enabled",
-              "aria2 失败回退",
-              "aria2 出错时自动改用内置下载器，而不是直接报错",
+              t("settings.aria2Fallback"),
+              t("settings.aria2FallbackHint"),
             )}
             {textRow(
               "proxy",
-              "代理",
-              "default / none / currentuser / host:port；留空用系统代理",
-              "default",
+              t("settings.proxy"),
+              t("settings.proxyHint"),
+              t("settings.proxyPlaceholder"),
             )}
             {textRow(
               "github_proxy",
-              "GitHub 下载代理",
-              "例如 https://ghproxy.net/；只加速 GitHub 的清单和预下载，留空直连",
+              t("settings.githubProxy"),
+              t("settings.githubProxyHint"),
               "https://ghproxy.net/",
             )}
           </View>,
         )}
 
         {section(
-          "安装",
+          t("settings.section.install"),
           <View>
             {selectRow(
               "default_architecture",
-              "默认架构",
-              "安装时优先选择的架构；跟随系统则用计算机本身的",
+              t("settings.defaultArch"),
+              t("settings.defaultArchHint"),
               [
-                { value: "", title: "跟随系统" },
+                { value: "", title: t("settings.defaultArchSystem") },
                 { value: "64bit", title: "64bit" },
                 { value: "32bit", title: "32bit" },
                 { value: "arm64", title: "arm64" },
@@ -572,43 +606,43 @@ export function SettingsTab() {
             )}
             {selectRow(
               "shim",
-              "shim 实现",
-              "命令包装器的实现；换掉后已建的 shim 需要重建才生效",
+              t("settings.shim"),
+              t("settings.shimHint"),
               [
                 { value: "kiennq", title: "kiennq" },
                 { value: "scoopcs", title: "scoopcs" },
-                { value: "71", title: "7zip 版" },
+                { value: "71", title: t("settings.shim7zip") },
               ],
             )}
             {flagRow(
               "use_external_7zip",
-              "外部 7-Zip",
-              "用系统已装的 7z.exe 解压，比内置解压更快",
+              t("settings.external7zip"),
+              t("settings.external7zipHint"),
             )}
             {flagRow(
               "use_lessmsi",
-              "lessmsi",
-              "用 lessmsi 解 msi，便于取出安装包里的文件",
+              t("settings.lessmsi"),
+              t("settings.lessmsiHint"),
             )}
             {flagRow(
               "no_junction",
-              "不使用 current 链接",
-              "让 shim 和快捷方式直接指向具体版本目录；只影响之后安装的应用",
+              t("settings.noJunction"),
+              t("settings.noJunctionHint"),
             )}
             {flagRow(
               "ignore_running_processes",
-              "忽略运行中的进程",
-              "升级或卸载时即使目标应用正在运行也继续（默认会中止）",
+              t("settings.ignoreRunning"),
+              t("settings.ignoreRunningHint"),
             )}
           </View>,
         )}
 
         {section(
-          "更新",
+          t("settings.section.update"),
           <View>
             <View class="flex-row items-center gap-4 border-b border-border py-2.5">
               <View class="flex-1 gap-0.5">
-                <Text class="text-sm text-foreground">更新 Scoop 和 bucket</Text>
+                <Text class="text-sm text-foreground">{t("settings.updateScoop")}</Text>
                 <Text
                   class="text-xs text-muted-foreground"
                   style={{ numberOfLines: 1 }}
@@ -617,7 +651,11 @@ export function SettingsTab() {
                 </Text>
               </View>
               <Button
-                label={updatingScoop() ? "更新中…" : "立即更新"}
+                label={
+                  updatingScoop()
+                    ? t("settings.updating")
+                    : t("settings.updateNow")
+                }
                 icon="download"
                 disabled={isBusy() || updatingScoop()}
                 onPress={() => void updateScoop()}
@@ -625,14 +663,14 @@ export function SettingsTab() {
             </View>
             {textRow(
               "scoop_repo",
-              "Scoop 仓库",
-              "Scoop 自身的源码仓库，可换成镜像地址",
+              t("settings.repo"),
+              t("settings.repoHint"),
               "https://github.com/ScoopInstaller/Scoop",
             )}
             {selectRow(
               "scoop_branch",
-              "Scoop 分支",
-              "master 稳定版；develop 提前拿到新功能",
+              t("settings.branch"),
+              t("settings.branchHint"),
               [
                 { value: "master", title: "master" },
                 { value: "develop", title: "develop" },
@@ -640,62 +678,62 @@ export function SettingsTab() {
             )}
             {flagRow(
               "update_nightly",
-              "更新 nightly",
-              "允许 nightly 版本在一天后被更新",
+              t("settings.nightly"),
+              t("settings.nightlyHint"),
             )}
             {flagRow(
               "force_update",
-              "强制更新",
-              "即使版本号相同，也按 bucket 里的清单重装",
+              t("settings.forceUpdate"),
+              t("settings.forceUpdateHint"),
             )}
             {flagRow(
               "use_git_history",
-              "查 git 历史",
-              "安装带版本号的旧版本时，先在 bucket 的 git 历史里找清单",
+              t("settings.gitHistory"),
+              t("settings.gitHistoryHint"),
             )}
             {flagRow(
               "autostash_on_conflict",
-              "冲突时自动 stash",
-              "更新 bucket 遇到本地改动时自动暂存，而不是直接中止",
+              t("settings.autostash"),
+              t("settings.autostashHint"),
             )}
             {tokenRow()}
           </View>,
         )}
 
         {section(
-          "高级",
+          t("settings.section.advanced"),
           <View>
             {flagRow(
               "debug",
-              "调试输出",
-              "让 Scoop 打印更详细的日志，排查失败原因时有用",
+              t("settings.debug"),
+              t("settings.debugHint"),
             )}
           </View>,
         )}
 
         {section(
-          "备份",
+          t("settings.section.backup"),
           <View>
             <View class="flex-row items-center gap-4 border-b border-border py-2.5">
               <View class="flex-1 gap-0.5">
-                <Text class="text-sm text-foreground">导出到文件</Text>
+                <Text class="text-sm text-foreground">{t("settings.exportTitle")}</Text>
                 <Text
                   class="text-xs text-muted-foreground"
                   style={{ numberOfLines: 1 }}
                 >
-                  {exported() ?? "点击导出后选择目录，保存成 Scoopfile"}
+                  {exported() ?? t("settings.exportHint")}
                 </Text>
               </View>
               <If when={exported()}>
                 <Button
-                  label="复制路径"
+                  label={t("settings.copyPath")}
                   size="small"
                   variant="ghost"
                   onPress={() => void copyExportPath()}
                 />
               </If>
               <Button
-                label="导出"
+                label={t("settings.export")}
                 variant="primary"
                 icon="upload"
                 disabled={savingKey() !== null || importing() !== null}
@@ -704,16 +742,20 @@ export function SettingsTab() {
             </View>
             <View class="flex-row items-center gap-4 py-2.5">
               <View class="flex-1 gap-0.5">
-                <Text class="text-sm text-foreground">从文件导入</Text>
+                <Text class="text-sm text-foreground">{t("settings.importTitle")}</Text>
                 <Text
                   class="text-xs text-muted-foreground"
                   style={{ numberOfLines: 1 }}
                 >
-                  点击导入后选择 Scoopfile，安装缺失的应用、添加 bucket
+                  {t("settings.importHint")}
                 </Text>
               </View>
               <Button
-                label={importing() !== null ? "导入中…" : "导入"}
+                label={
+                  importing() !== null
+                    ? t("settings.importing")
+                    : t("settings.import")
+                }
                 icon="download"
                 disabled={importing() !== null || isBusy()}
                 onPress={() => void importConfig()}
@@ -723,12 +765,15 @@ export function SettingsTab() {
         )}
 
         {section(
-          "缓存",
+          t("settings.section.cache"),
           <View>
             <View class="flex-row items-center gap-4 py-2.5">
               <View class="flex-1 gap-0.5">
                 <Text class="text-sm text-foreground">
-                  {`${formatBytes(settings()?.cacheBytes ?? 0)} · ${settings()?.cacheFiles ?? 0} 个文件`}
+                  {t("settings.cacheSummary", {
+                    size: formatBytes(settings()?.cacheBytes ?? 0),
+                    count: settings()?.cacheFiles ?? 0,
+                  })}
                 </Text>
                 <Text
                   class="text-xs text-muted-foreground"
@@ -738,13 +783,13 @@ export function SettingsTab() {
                 </Text>
               </View>
               <Button
-                label="清理旧版本"
+                label={t("settings.cleanupOld")}
                 size="small"
                 disabled={isBusy()}
                 onPress={() => void cleanupOldVersions()}
               />
               <Button
-                label="清理缓存"
+                label={t("settings.clearCache")}
                 size="small"
                 disabled={isBusy() || (settings()?.cacheFiles ?? 0) === 0}
                 onPress={() => void clearCache()}
@@ -754,17 +799,19 @@ export function SettingsTab() {
         )}
 
         {section(
-          "关于",
+          t("settings.section.about"),
           <View>
             {infoRow(
-              "ScoopDeck 版本",
+              t("settings.appVersion"),
               () =>
-                `${app.version ?? "—"}${app.development ? "（开发版）" : ""}`,
+                `${app.version ?? "—"}${
+                  app.development ? t("settings.devVersion") : ""
+                }`,
             )}
-            {infoRow("Scoop 版本", () => settings()?.version ?? "")}
-            {infoRow("根目录", () => settings()?.rootPath ?? "")}
-            {infoRow("全局目录", () => settings()?.globalPath ?? "")}
-            {infoRow("配置文件", () => "~/.config/scoop/config.json")}
+            {infoRow(t("settings.scoopVersion"), () => settings()?.version ?? "")}
+            {infoRow(t("settings.root"), () => settings()?.rootPath ?? "")}
+            {infoRow(t("settings.global"), () => settings()?.globalPath ?? "")}
+            {infoRow(t("settings.config"), () => "~/.config/scoop/config.json")}
           </View>,
         )}
       </View>

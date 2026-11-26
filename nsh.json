@@ -6,6 +6,7 @@
   "icon": "assets/icon.png",
   "nsh": ">=0.7.1",
   "theme": "theme.json",
+  "locales": ["zh-CN"],
   "singleInstance": true,
   "rust": ".",
   "dependencies": {

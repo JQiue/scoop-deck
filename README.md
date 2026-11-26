@@ -215,4 +215,4 @@ cargo test --manifest-path .nsh\rust\Cargo.toml -p scoop-deck -- --ignored
 
 ## 许可
 
-项目目前没有附带 `LICENSE` 文件。若计划公开发布，请先补充许可证后再分发。
+[MIT](LICENSE) © 2026 JQiue

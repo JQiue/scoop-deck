@@ -113,6 +113,25 @@ scoop update scoop-deck
 
 The manifest installs the release zip, adds a Start menu shortcut, and keeps the app's `nsh/` runtime next to the executable. It does not use `scoop config` for updates; update it with `scoop update scoop-deck`.
 
+### Download from GitHub Releases
+
+Open the [latest release](https://github.com/JQiue/scoop-deck/releases/latest) and download `ScoopDeck.zip`. Or do it from PowerShell:
+
+```powershell
+$url = "https://github.com/JQiue/scoop-deck/releases/latest/download/ScoopDeck.zip"
+Invoke-WebRequest $url -OutFile ScoopDeck.zip
+Expand-Archive ScoopDeck.zip -DestinationPath .
+.\ScoopDeck\ScoopDeck.exe
+```
+
+Keep the `nsh/` folder next to `ScoopDeck.exe`; run the extracted copy rather than the executable inside the zip. To check the download, compare its SHA-256 with the `hash` in the release's `scoop-deck.json`:
+
+```powershell
+(Get-FileHash .\ScoopDeck.zip -Algorithm SHA256).Hash.ToLower()
+```
+
+`v0.1.0` ships as a portable zip, not an installer. The executable is not code-signed, so Windows SmartScreen may warn; continue only if the hash matches.
+
 ## How It Works & Data Files
 
 ### Core Mechanisms

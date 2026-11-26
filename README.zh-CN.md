@@ -113,6 +113,25 @@ scoop update scoop-deck
 
 清单会安装 release 里的 zip，创建开始菜单快捷方式，并把 `nsh/` 运行时放在可执行文件旁边；后续用 `scoop update scoop-deck` 更新。
 
+### 从 GitHub Release 下载
+
+打开 [最新 Release](https://github.com/JQiue/scoop-deck/releases/latest)，下载 `ScoopDeck.zip`。也可以在 PowerShell 中执行：
+
+```powershell
+$url = "https://github.com/JQiue/scoop-deck/releases/latest/download/ScoopDeck.zip"
+Invoke-WebRequest $url -OutFile ScoopDeck.zip
+Expand-Archive ScoopDeck.zip -DestinationPath .
+.\ScoopDeck\ScoopDeck.exe
+```
+
+`ScoopDeck.exe` 必须和同目录的 `nsh/` 文件夹一起使用；请运行解压后的副本，不要直接运行 zip 里的 exe。校验下载时，可以把 SHA-256 和 release 中 `scoop-deck.json` 的 `hash` 对比：
+
+```powershell
+(Get-FileHash .\ScoopDeck.zip -Algorithm SHA256).Hash.ToLower()
+```
+
+`v0.1.0` 提供的是便携 zip，不是安装器。可执行文件没有代码签名，Windows SmartScreen 可能会提示风险；只有哈希一致时才继续运行。
+
 ## 工作原理与数据路径
 
 ### 核心机制

@@ -202,6 +202,8 @@ Run `nsh check`, `nsh test`, and `cargo fmt` locally before finishing changes. F
 
 Development happens on the `dev` branch. Releases merge `dev` into `main`; version tags (`v0.1.0`, …) are created only on `main`. The release workflow rejects a tag whose commit is not on `main`.
 
+CI runs on pull requests, pushes to `main`, manual dispatch, and one nightly run on `dev`; it does not run for every `dev` push. Docs-only changes are skipped.
+
 ## Troubleshooting
 
 - **No installable packages in Search**: No buckets are added yet, or the catalog cache is stale. Add a bucket in the Bucket tab, click `立即更新` in Settings, or delete `%LOCALAPPDATA%\ScoopDeck\catalog.json` and restart.

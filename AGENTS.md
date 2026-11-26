@@ -15,7 +15,8 @@ No git repo, no CI.
 - `cargo fmt` before finishing Rust edits; `nsh check` does not format.
 - `nsh package --target windows` — output under `.nsh\out`.
 - Branches: develop on `dev`; releases merge into `main`, and version tags (`v*`) are only created on `main`. `.github/workflows/release.yml` checks the tag is on `main` and that `nsh.json`'s version matches the tag.
-- Release artifacts: `ScoopDeck.zip` plus a generated `scoop-deck.json` Scoop manifest (with the archive hash) attached to the GitHub Release. CI runs `nsh check`, `nsh build`, and `nsh test` on Windows.
+- Release artifacts: `ScoopDeck.zip` plus a generated `scoop-deck.json` Scoop manifest (with the archive hash) attached to the GitHub Release. CI runs `nsh check` and `nsh test` on Windows.
+- CI cost: it runs on pull requests, pushes to `main`, manual dispatch, and one nightly scheduled run on `dev` — not on every `dev` push. Docs-only changes are ignored via `paths-ignore`; release packaging still builds the full app.
 
 ## Layout
 

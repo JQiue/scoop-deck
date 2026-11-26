@@ -202,6 +202,8 @@ cargo test --manifest-path .nsh\rust\Cargo.toml -p scoop-deck -- --ignored
 
 开发在 `dev` 分支进行。发布时把 `dev` 合并到 `main`，版本 tag（`v0.1.0` 等）只打在 `main` 的提交上；release workflow 会拒绝不在 `main` 上的 tag。
 
+CI 只在 pull request、`main` 的 push、手动触发和每晚一次 `dev` 定时任务上运行，不再每次 `dev` push 都跑；只改文档的提交会跳过。
+
 ## 故障排查
 
 - **搜索页没有可安装包**：本机还没有添加 bucket，或清单缓存过期。去 Bucket 页添加来源，或在设置页运行「立即更新」；也可以删除 `%LOCALAPPDATA%\ScoopDeck\catalog.json` 后重启。

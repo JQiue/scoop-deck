@@ -1,19 +1,60 @@
 name: CI
 
 on:
-  push:
-    branches: [dev, main]
+  workflow_dispatch:
   pull_request:
     branches: [dev, main]
+    paths-ignore:
+      - "**.md"
+      - "LICENSE"
+      - "docs/**"
+  push:
+    branches: [main]
+    paths-ignore:
+      - "**.md"
+      - "LICENSE"
+      - "docs/**"
+  # One nightly run keeps dev tested without a build for every push.
+  # GitHub schedules this on the repository's default branch (currently dev).
+  schedule:
+    - cron: "0 18 * * *"
+
+concurrency:
+  group: ci-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: true
 
 jobs:
   windows:
     runs-on: windows-latest
+    timeout-minutes: 45
 
     steps:
       - uses: actions/checkout@v4
 
       - uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache nsh
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/nsh-0.7.1
+          key: nsh-0.7.1-windows-x86_64
+
+      - name: Install nsh
+        shell: pwsh
+        run: |
+          $version = "0.7.1"
+          $root = "$env:RUNNER_TEMP\nsh-$version"
+          if (-not (Test-Path $root)) {
+            $zip = "$env:RUNNER_TEMP\nsh.zip"
+            Invoke-WebRequest "https://github.com/longbridge/nsh/releases/download/v$version/nsh-windows-x86_64.zip" -OutFile $zip
+            Expand-Archive $zip -DestinationPath $root -Force
+          }
+          $exe = Get-ChildItem $root -Recurse -Filter nsh.exe | Select-Object -First 1
+          if (-not $exe) {
+            throw "nsh.exe was not found in the downloaded archive."
+          }
+          $exe.Directory.FullName | Out-File -FilePath $env:GITHUB_PATH -Append
+          & $exe.FullName --version
 
       - name: Cache Cargo and nshm builds
         uses: actions/cache@v4
@@ -28,34 +69,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cargo-
 
-      - name: Install Scoop
-        shell: pwsh
-        run: |
-          irm get.scoop.sh | iex
-          "$env:USERPROFILE\scoop\shims" | Out-File -FilePath $env:GITHUB_PATH -Append
-          scoop --version
-
-      - name: Install nsh
-        shell: pwsh
-        run: |
-          scoop install https://github.com/longbridge/nsh/releases/latest/download/nsh.json
-          nsh --version
-
-      - name: Install the main bucket for headless UI tests
-        shell: pwsh
-        run: |
-          scoop bucket add main
-          scoop list
-
       - name: Install nshm dependencies
         shell: pwsh
         run: nsh add nsh-omarchy
 
       - name: Typecheck and cargo check
         run: nsh check
-
-      - name: Build
-        run: nsh build
 
       - name: Test
         run: nsh test

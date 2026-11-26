@@ -6,8 +6,36 @@ const START_HINT = /^(输入关键词开始搜索|Type a keyword to search)$/;
 const CATALOG_HINT = /^(\d+ 个可安装包|\d+ installable packages)$/;
 const MATCH_HINT = /^(匹配 \d+ 个|\d+ matches)/;
 
+// Keep the shell tests independent of the machine's Scoop installation.
+const NATIVE = {
+  "Scoop.available": () => true,
+  "Scoop.installed": () => [],
+  "Scoop.buckets": () => [],
+  "Scoop.knownBuckets": () => [],
+  "Scoop.catalog": () => [
+    {
+      name: "git",
+      version: "2.47.0",
+      description: "Distributed version control system",
+      bucket: "main",
+    },
+    {
+      name: "jq",
+      version: "1.7.1",
+      description: "Command-line JSON processor",
+      bucket: "main",
+    },
+  ],
+};
+
+function openApp() {
+  return open("../App.tsx", {
+    modules: { "scoop-deck/native": NATIVE },
+  });
+}
+
 test("shows the scoop tabs and the search hint", async () => {
-  const app = await open("../App.tsx");
+  const app = await openApp();
 
   await app.waitFor("id:tab-search");
   await app.press("id:tab-search");
@@ -17,7 +45,7 @@ test("shows the scoop tabs and the search hint", async () => {
 });
 
 test("filters the catalog as the query changes", async () => {
-  const app = await open("../App.tsx");
+  const app = await openApp();
 
   await app.waitFor("id:tab-search");
   await app.press("id:tab-search");
@@ -28,6 +56,11 @@ test("filters the catalog as the query changes", async () => {
     () => app.texts().some((text) => CATALOG_HINT.test(text)),
     { timeout: 30000 },
   );
+  expect(
+    app
+      .texts()
+      .some((text) => /^(2 个可安装包|2 installable packages)$/.test(text)),
+  ).toBe(true);
 
   await app.type("id:search-input", "a");
   // 输入事件在下一帧才到达状态，等提示文字变化再断言。
@@ -39,3 +72,4 @@ test("filters the catalog as the query changes", async () => {
   expect(app.value("id:search-input")).toBe("a");
   expect(app.texts().some((text) => START_HINT.test(text))).toBe(false);
 });
+

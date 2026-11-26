@@ -15,6 +15,14 @@ ScoopDeck 不另建一套包数据库，而是把本机的 Scoop 环境整理成
 
 > 仅支持 Windows 10 1809+ 和 Windows 11。界面支持简体中文和英文，默认跟随 Windows 语言，可在设置中切换。
 
+## 截图
+
+| 已安装 | 包详情 |
+| --- | --- |
+| ![已安装列表](docs/screenshots/installed.png) | ![包详情](docs/screenshots/details.png) |
+
+![设置页](docs/screenshots/settings.png)
+
 ## 功能
 
 ### 已安装
@@ -94,6 +102,17 @@ nsh package --target windows
 
 > 启动后如果提示「未检测到 Scoop」，先按界面引导安装 Scoop，再点「重新检测」；仍然失败时重启一次 ScoopDeck。
 
+### 用 Scoop 安装
+
+Release 页面附带带有压缩包哈希的 `scoop-deck.json` 清单：
+
+```powershell
+scoop install https://github.com/JQiue/scoop-deck/releases/download/v0.1.0/scoop-deck.json
+scoop update scoop-deck
+```
+
+清单会安装 release 里的 zip，创建开始菜单快捷方式，并把 `nsh/` 运行时放在可执行文件旁边；后续用 `scoop update scoop-deck` 更新。
+
 ## 工作原理与数据路径
 
 ### 核心机制
@@ -131,8 +150,9 @@ nsh package --target windows
 ├─ theme.json              # Flexoki Light / Tokyo Night 主题 token
 ├─ locales/app.yml         # 简体中文与英文翻译
 ├─ Cargo.toml              # Rust crate（scoop-deck）
-├─ assets/                 # 应用图标与托盘图标
+├─ assets/                 # 应用图标
 ├─ ui/
+│  ├─ assets/tray.png      # 系统托盘图标
 │  ├─ App.tsx              # 窗口、标签页、托盘、启动检查
 │  ├─ deck.ts              # 共享信号、加载器、详情与 bucket 操作
 │  ├─ queue.ts             # 下载/安装队列、取消、重试
@@ -179,6 +199,8 @@ cargo test --manifest-path .nsh\rust\Cargo.toml -p scoop-deck -- --ignored
 ```
 
 完成修改前请在本地运行 `nsh check`、`nsh test` 和 `cargo fmt`。组件使用细节、框架踩坑说明及 Scoop 集成红线请参见 [AGENTS.md](AGENTS.md)。
+
+开发在 `dev` 分支进行。发布时把 `dev` 合并到 `main`，版本 tag（`v0.1.0` 等）只打在 `main` 的提交上；release workflow 会拒绝不在 `main` 上的 tag。
 
 ## 故障排查
 

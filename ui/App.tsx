@@ -10,7 +10,7 @@ import {
 } from "nsh";
 import { Button, Tab, Tabs, Toaster } from "./omarchy";
 import { Application, Tray, Window } from "nsh/desktop";
-import trayIcon from "../assets/tray.png";
+import trayIcon from "./assets/tray.png";
 import {
   DeckContext,
   TAB_BUCKETS,

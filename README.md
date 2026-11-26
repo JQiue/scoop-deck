@@ -15,6 +15,14 @@ ScoopDeck does not maintain a separate package database; it organizes your local
 
 > Supports Windows 10 1809+ and Windows 11 only. The UI is available in Simplified Chinese and English, follows the Windows language by default, and can be switched in Settings.
 
+## Screenshots
+
+| Installed | Package details |
+| --- | --- |
+| ![Installed packages](docs/screenshots/installed.png) | ![Package details](docs/screenshots/details.png) |
+
+![Settings](docs/screenshots/settings.png)
+
 ## Features
 
 ### Installed
@@ -94,6 +102,17 @@ nsh package --target windows
 
 > If ScoopDeck prompts `未检测到 Scoop` on startup, follow the on-screen guide to install Scoop and click `重新检测` (Re-detect), or restart ScoopDeck.
 
+### Install with Scoop
+
+The release page carries a `scoop-deck.json` manifest with the archive hash:
+
+```powershell
+scoop install https://github.com/JQiue/scoop-deck/releases/download/v0.1.0/scoop-deck.json
+scoop update scoop-deck
+```
+
+The manifest installs the release zip, adds a Start menu shortcut, and keeps the app's `nsh/` runtime next to the executable. It does not use `scoop config` for updates; update it with `scoop update scoop-deck`.
+
 ## How It Works & Data Files
 
 ### Core Mechanisms
@@ -131,8 +150,9 @@ There are no Node.js or npm dependencies; TSX calls the Rust `Scoop` module expo
 ├─ theme.json              # Flexoki Light / Tokyo Night theme tokens
 ├─ locales/app.yml         # Simplified Chinese and English translations
 ├─ Cargo.toml              # Rust crate (scoop-deck)
-├─ assets/                 # App icon and system tray icon
+├─ assets/                 # App icon
 ├─ ui/
+│  ├─ assets/tray.png      # System tray icon
 │  ├─ App.tsx              # Window management, tabs, system tray, startup checks
 │  ├─ deck.ts              # Shared signals, loaders, detail & bucket actions
 │  ├─ queue.ts             # Download/install queue, cancel, retry
@@ -179,6 +199,8 @@ cargo test --manifest-path .nsh\rust\Cargo.toml -p scoop-deck -- --ignored
 ```
 
 Run `nsh check`, `nsh test`, and `cargo fmt` locally before finishing changes. For component guidelines, framework caveats, and Scoop integration rules, see [AGENTS.md](AGENTS.md).
+
+Development happens on the `dev` branch. Releases merge `dev` into `main`; version tags (`v0.1.0`, …) are created only on `main`. The release workflow rejects a tag whose commit is not on `main`.
 
 ## Troubleshooting
 

@@ -1,0 +1,149 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Require the tag to be on main
+        shell: pwsh
+        run: |
+          git fetch origin main
+          git merge-base --is-ancestor $env:GITHUB_SHA origin/main
+          if ($LASTEXITCODE -ne 0) {
+            throw "Release tags must point to a commit on main."
+          }
+
+      - name: Check the version matches the tag
+        shell: pwsh
+        run: |
+          $version = (Get-Content nsh.json -Raw | ConvertFrom-Json).version
+          $tag = $env:GITHUB_REF_NAME.TrimStart("v")
+          if ($version -ne $tag) {
+            throw "nsh.json version $version does not match tag $tag."
+          }
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Cargo and nshm builds
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ~/.nsh
+            target
+            .nsh/rust/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('Cargo.lock', 'nsh.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Install Scoop
+        shell: pwsh
+        run: |
+          irm get.scoop.sh | iex
+          "$env:USERPROFILE\scoop\shims" | Out-File -FilePath $env:GITHUB_PATH -Append
+          scoop --version
+
+      - name: Install nsh
+        shell: pwsh
+        run: |
+          scoop install https://github.com/longbridge/nsh/releases/latest/download/nsh.json
+          nsh --version
+
+      - name: Install nshm dependencies
+        shell: pwsh
+        run: nsh add nsh-omarchy
+
+      - name: Package Windows
+        shell: pwsh
+        run: |
+          nsh package --target windows
+          if ($LASTEXITCODE -ne 0) {
+            $zip = Get-ChildItem .nsh/out -Filter *.zip -ErrorAction SilentlyContinue
+            if (-not $zip) {
+              exit $LASTEXITCODE
+            }
+            Write-Warning "nsh package reported an installer error; releasing the zip."
+          }
+
+      - name: Generate the Scoop manifest
+        shell: pwsh
+        run: |
+          $version = (Get-Content nsh.json -Raw | ConvertFrom-Json).version
+          $zip = Get-ChildItem .nsh/out -Filter *.zip | Sort-Object LastWriteTime | Select-Object -Last 1
+          if (-not $zip) {
+            throw "nsh package produced no .zip."
+          }
+
+          $hash = (Get-FileHash $zip.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+          $archive = [System.IO.Compression.ZipFile]::OpenRead($zip.FullName)
+          try {
+            $roots = @(
+              $archive.Entries |
+                ForEach-Object { ($_.FullName -split "/")[0] } |
+                Where-Object { $_ -ne "" } |
+                Select-Object -Unique
+            )
+          } finally {
+            $archive.Dispose()
+          }
+          $extractDir = if ($roots.Count -eq 1 -and $roots[0] -ne "nsh") { $roots[0] } else { $null }
+
+          $download = "https://github.com/JQiue/scoop-deck/releases/download/v$version"
+          $updateUrl = "https://github.com/JQiue/scoop-deck/releases/download/v`$version/" + $zip.Name
+          $manifest = [ordered]@{
+            version = $version
+            description = "A native Windows GUI for Scoop"
+            homepage = "https://github.com/JQiue/scoop-deck"
+            license = "MIT"
+            architecture = [ordered]@{
+              "64bit" = [ordered]@{
+                url = "$download/$($zip.Name)"
+                hash = $hash
+              }
+            }
+            shortcuts = @(, @("ScoopDeck.exe", "ScoopDeck"))
+            checkver = [ordered]@{
+              github = "https://github.com/JQiue/scoop-deck"
+            }
+            autoupdate = [ordered]@{
+              architecture = [ordered]@{
+                "64bit" = [ordered]@{
+                  url = $updateUrl
+                }
+              }
+            }
+          }
+          if ($extractDir) {
+            $manifest["extract_dir"] = $extractDir
+          }
+
+          $manifest |
+            ConvertTo-Json -Depth 10 |
+            Set-Content -Path .nsh/out/scoop-deck.json -Encoding utf8
+          Get-Content .nsh/out/scoop-deck.json
+
+      - name: Publish the release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          fail_on_unmatched_files: false
+          files: |
+            .nsh/out/*.zip
+            .nsh/out/*-setup.exe
+            .nsh/out/scoop-deck.json

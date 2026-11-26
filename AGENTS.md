@@ -14,6 +14,8 @@ No git repo, no CI.
 - After upgrading nsh itself, delete `.nsh/` before the next build: generated crate names change between 0.6 and 0.7 and old leftovers fail with `nsh-app-…-hack`.
 - `cargo fmt` before finishing Rust edits; `nsh check` does not format.
 - `nsh package --target windows` — output under `.nsh\out`.
+- Branches: develop on `dev`; releases merge into `main`, and version tags (`v*`) are only created on `main`. `.github/workflows/release.yml` checks the tag is on `main` and that `nsh.json`'s version matches the tag.
+- Release artifacts: `ScoopDeck.zip` plus a generated `scoop-deck.json` Scoop manifest (with the archive hash) attached to the GitHub Release. CI runs `nsh check`, `nsh build`, and `nsh test` on Windows.
 
 ## Layout
 

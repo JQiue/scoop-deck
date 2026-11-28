@@ -24,6 +24,7 @@ import { SearchTab } from "./SearchTab";
 import { BucketsTab } from "./BucketsTab";
 import { DetailSheet } from "./DetailSheet";
 import { ErrorToast } from "./ErrorBanner";
+import { ConfirmHost } from "./confirm";
 import { QueueDock } from "./QueueDock";
 import { ScoopSetup } from "./ScoopSetup";
 import { SettingsTab } from "./SettingsTab";
@@ -280,6 +281,7 @@ function App() {
           <DetailSheet />
           <QueueDock />
           <ErrorToast />
+          <ConfirmHost />
         </If>
       </View>
     </DeckContext.Provider>

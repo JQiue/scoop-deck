@@ -1,5 +1,6 @@
 import { appInfo, Clipboard, effect, Scroll, signal, Text, View } from "nsh";
-import { Button, confirm, Panel, Select, Switch } from "./omarchy";
+import { Button, Panel, Select, Switch } from "./omarchy";
+import { confirm } from "./confirm";
 import { Scoop, type ScoopSettings } from "scoop-deck/native";
 import {
   setThemePreference,

@@ -68,6 +68,9 @@ common.uninstall:
 common.cancel:
   en: "Cancel"
   zh-CN: "取消"
+common.ok:
+  en: "OK"
+  zh-CN: "确定"
 common.retry:
   en: "Retry"
   zh-CN: "重试"

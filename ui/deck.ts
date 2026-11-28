@@ -1,5 +1,6 @@
 import { Clipboard, context, signal } from "nsh";
-import { confirm, toast } from "./omarchy";
+import { toast } from "./omarchy";
+import { confirm } from "./confirm";
 import {
   Scoop,
   type ScoopApp,

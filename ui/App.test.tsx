@@ -7,11 +7,24 @@ const CATALOG_HINT = /^(\d+ 个可安装包|\d+ installable packages)$/;
 const MATCH_HINT = /^(匹配 \d+ 个|\d+ matches)/;
 
 // Keep the shell tests independent of the machine's Scoop installation.
+let uninstalled = 0;
 const NATIVE = {
   "Scoop.available": () => true,
-  "Scoop.installed": () => [],
+  "Scoop.installed": () => [
+    {
+      name: "git",
+      installedVersion: "2.46.0",
+      latestVersion: "2.47.0",
+      description: "Distributed version control system",
+      bucket: "main",
+    },
+  ],
   "Scoop.buckets": () => [],
   "Scoop.knownBuckets": () => [],
+  "Scoop.uninstall": () => {
+    uninstalled += 1;
+    return Promise.resolve();
+  },
   "Scoop.catalog": () => [
     {
       name: "git",
@@ -73,3 +86,31 @@ test("filters the catalog as the query changes", async () => {
   expect(app.texts().some((text) => START_HINT.test(text))).toBe(false);
 });
 
+test("asks before uninstalling in a themed dialog", async () => {
+  const app = await openApp();
+
+  await app.waitFor("id:tab-installed");
+  await app.press("text:Uninstall");
+  await app.waitFor("text:Confirm uninstall");
+  expect(app.texts()).toContain("Uninstall git? This cannot be undone.");
+
+  // 取消后关闭，不进入队列。
+  await app.press("text:Cancel");
+  await app.waitUntil(() => !app.texts().includes("Confirm uninstall"));
+});
+
+test("uninstalls after the dialog is confirmed", async () => {
+  uninstalled = 0;
+  const app = await openApp();
+
+  await app.waitFor("id:tab-installed");
+  await app.press("text:Uninstall");
+  await app.waitFor("text:Confirm uninstall");
+
+  // 顶层弹窗里的“Uninstall”是确认按钮（表格行里的那个在其前面）。
+  await app.press("role:dialog >> text:Uninstall");
+  await app.waitUntil(() => uninstalled === 1, { timeout: 10000 });
+  await app.waitUntil(() => app.texts().includes("Uninstalled git"), {
+    timeout: 30000,
+  });
+});

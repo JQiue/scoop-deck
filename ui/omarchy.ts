@@ -9,6 +9,7 @@ export {
   Card,
   Checkbox,
   confirm,
+  Dialog,
   dismissToast,
   EmptyState,
   Field,

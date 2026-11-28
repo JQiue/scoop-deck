@@ -25,7 +25,7 @@ import { BucketsTab } from "./BucketsTab";
 import { DetailSheet } from "./DetailSheet";
 import { ErrorToast } from "./ErrorBanner";
 import { ConfirmHost } from "./confirm";
-import { QueueDock } from "./QueueDock";
+import { QueueIndicator } from "./QueueIndicator";
 import { ScoopSetup } from "./ScoopSetup";
 import { SettingsTab } from "./SettingsTab";
 import { startLanguage, t } from "./i18n";
@@ -218,38 +218,41 @@ function App() {
           <ScoopSetup />
         </If>
         <If when={scoopAvailable() === true}>
-          <View class="bg-background px-4">
-            <Tabs
-              value={TAB_VALUES[tab()]}
-              variant="underline"
-              accessibilityLabel={t("app.nav")}
-              onChange={({ value }) => selectTab(value)}
-            >
-              <Tab
-                testID="tab-installed"
-                value="installed"
-                label={t("tabs.installed")}
-                icon="download"
-              />
-              <Tab
-                testID="tab-search"
-                value="search"
-                label={t("tabs.search")}
-                icon="search"
-              />
-              <Tab
-                testID="tab-buckets"
-                value="buckets"
-                label={t("tabs.buckets")}
-                icon="folder"
-              />
-              <Tab
-                testID="tab-settings"
-                value="settings"
-                label={t("tabs.settings")}
-                icon="settings"
-              />
-            </Tabs>
+          <View class="flex-row items-center gap-2 bg-background px-4">
+            <View class="min-w-0 flex-1">
+              <Tabs
+                value={TAB_VALUES[tab()]}
+                variant="underline"
+                accessibilityLabel={t("app.nav")}
+                onChange={({ value }) => selectTab(value)}
+              >
+                <Tab
+                  testID="tab-installed"
+                  value="installed"
+                  label={t("tabs.installed")}
+                  icon="download"
+                />
+                <Tab
+                  testID="tab-search"
+                  value="search"
+                  label={t("tabs.search")}
+                  icon="search"
+                />
+                <Tab
+                  testID="tab-buckets"
+                  value="buckets"
+                  label={t("tabs.buckets")}
+                  icon="folder"
+                />
+                <Tab
+                  testID="tab-settings"
+                  value="settings"
+                  label={t("tabs.settings")}
+                  icon="settings"
+                />
+              </Tabs>
+            </View>
+            <QueueIndicator />
           </View>
 
           <View class="flex-1">
@@ -279,7 +282,6 @@ function App() {
           </View>
 
           <DetailSheet />
-          <QueueDock />
           <ErrorToast />
           <ConfirmHost />
         </If>

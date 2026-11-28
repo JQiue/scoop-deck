@@ -12,6 +12,7 @@ Windows-only Scoop package manager UI. TSX (nsh) for the UI, Rust for anything t
 - `nsh add nsh-omarchy` — installs/locks the component nshm (`nsh.json` `dependencies`, `nsh.lock`). Commit both changes.
 - `nsh package --target windows` — writes `.nsh\out\ScoopDeck.zip` (and a directory). An Inno Setup installer is added only when Inno Setup is installed; a local installer failure does not invalidate the zip.
 - `cargo fmt` before finishing Rust edits; `nsh check` does not format.
+- `python scripts/mock-scoop.py` — in-memory URL-manifest mock server for download testing: serves `/<app>.json` and generated zips at a fixed `RATE_KIB`/`DEFAULT_SIZE`. No subcommands, no state files; apps start at 0.1.0.
 
 ## Branch / CI / release
 
@@ -30,7 +31,7 @@ Windows-only Scoop package manager UI. TSX (nsh) for the UI, Rust for anything t
 - `ui/deck.ts` — shared signals, loaders, detail/bucket actions, context.
 - `ui/queue.ts` — download/install queue, progress, cancel, retry.
 - `ui/filters.ts` / `ui/search.ts` — installed filters and catalog search.
-- `ui/InstalledTab.tsx`, `SearchTab.tsx`, `BucketsTab.tsx`, `SettingsTab.tsx`, `DetailSheet.tsx`, `QueueDock.tsx`, `JobSlot.tsx`, `ErrorBanner.tsx`, `ScoopSetup.tsx` — screens/widgets.
+- `ui/InstalledTab.tsx`, `SearchTab.tsx`, `BucketsTab.tsx`, `SettingsTab.tsx`, `DetailSheet.tsx`, `QueueIndicator.tsx`, `JobSlot.tsx`, `ErrorBanner.tsx`, `ScoopSetup.tsx` — screens/widgets.
 - `ui/omarchy.ts` — central re-export of `nsh-omarchy`; import controls from here.
 - `ui/confirm.tsx` — themed `confirm()` and its `ConfirmHost` (Omarchy `Dialog`); mounted once in `ui/App.tsx`.
 - `ui/theme.ts` / `ui/i18n.ts` — theme and language preferences in nsh `Storage`.
@@ -69,6 +70,7 @@ Windows-only Scoop package manager UI. TSX (nsh) for the UI, Rust for anything t
 ## Scoop integration invariants
 
 - Install/update: our downloader populates Scoop's cache, then `scoop install|update` verifies/extracts/links. Cache name must match `<app>#<version>#<sha256(raw url incl. fragment)[0..7]><ext>` exactly; write `<name>.download` then rename.
+- URL-manifest installs skip prefetch: the Search tab's dialog calls `Scoop.installUrl(url, name)` (`scoop install <url>`); `name` is the manifest file's stem, and the queue keeps `job.url` so retries stay URL installs. Progress is parsed from Scoop's output.
 - If prefetch fails, always let Scoop download; never fail the install because prefetch failed.
 - Settings read/write `%USERPROFILE%\.config\scoop\config.json` directly (atomic, preserve unknown keys); only `FLAG_KEYS`/`TEXT_KEYS` in `src/lib.rs` are writable. `use_sqlite_cache` is intentionally excluded.
 - Downloads run in parallel (`MAX_DOWNLOADS = 3`) but install/uninstall is serial. `CURRENT_CHILD`/`CURRENT_JOB` and per-app flags enforce this.
@@ -81,5 +83,6 @@ Windows-only Scoop package manager UI. TSX (nsh) for the UI, Rust for anything t
 ## Conventions
 
 - Keep files split by screen/concern; no extra abstractions beyond nsh + local signals.
+- Settings rows: a label that needs explaining carries a small decorative `info` icon whose tooltip holds the text (hover only, not in the Tab order); omit it when the label and control already say it (theme, language, debug). Keep a second line only for live status (last update time, cache path, exported path).
 - Windows 10 1809+/11 only; no Node/npm. `nsh` owns build, typecheck, test, package.
 - Docs are English (`README.md`) and Simplified Chinese (`README.zh-CN.md`); keep install/release instructions in sync.

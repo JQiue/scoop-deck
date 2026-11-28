@@ -9,6 +9,9 @@ target/
 # Machine-specific Cargo mirror / proxy settings
 .cargo/
 
+# Python cache from scripts/
+__pycache__/
+
 # Never commit update signing keys or secrets
 *.secret
 *.key

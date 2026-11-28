@@ -1,28 +1,38 @@
-import { Text, View } from "nsh";
-import { Button, Progress } from "./omarchy";
-import { stageLabel } from "./ui";
-import { canCancelJob, useDeck, type JobKind } from "./deck";
+import { View } from "nsh";
+import { Button, IconButton, Tooltip } from "./omarchy";
+import { jobStatusText } from "./ui";
+import { canCancelJob, useDeck, type Job, type JobKind } from "./deck";
 import { t } from "./i18n";
 
 export function PreparingButton() {
-  return <Button label={t("job.preparing")} size="small" disabled />;
-}
+  const label = t("job.preparing");
 
-/** 安装/更新进行中的内容：进度条 + 阶段（取消按钮由外面决定是否显示）。 */
-function InstallProgress(props: { kind: JobKind; stage: string }) {
   return (
-    <View class="flex-row items-center gap-2">
-      <Progress indeterminate />
-      <Text class="text-xs font-medium text-foreground">
-        {props.kind === "uninstall"
-          ? t("job.uninstalling")
-          : stageLabel(props.stage)}
-      </Text>
-    </View>
+    <IconButton
+      icon="loader-circle"
+      label={label}
+      size="small"
+      variant="default"
+      loading
+      tooltip={<Tooltip label={label} />}
+    />
   );
 }
 
-/** 一个任务在行内占用的按钮：排队中 / 待安装 / 进度（可取消）。 */
+/** 行内任务的取消按钮：读屏说明带应用名，视觉上只有图标。 */
+function cancelLabel(kind: JobKind, status: Job["status"], name: string): string {
+  if (status === "downloading") {
+    return t("job.cancelDownload", { name });
+  }
+
+  if (status === "installing" || (status === "ready" && kind !== "uninstall")) {
+    return t("job.cancelInstall", { name });
+  }
+
+  return t("job.cancelQueue", { name });
+}
+
+/** 一个任务在行内占用的位置：转圈的进度图标，可取消时旁边再加一个取消图标。 */
 export function JobSlot(props: { name: string; kind: JobKind }) {
   const { jobOf, cancelJob, retryJob, removeJob } = useDeck();
   const { name, kind } = props;
@@ -31,44 +41,6 @@ export function JobSlot(props: { name: string; kind: JobKind }) {
     <If when={jobOf(name, kind)}>
       {(job) => (
         <View class="flex-row items-center gap-1">
-          <If when={job().status === "waiting"}>
-            <Button
-              label={t("job.waiting")}
-              size="small"
-              variant="ghost"
-              accessibilityLabel={t("job.cancelQueue", { name })}
-              onPress={() => void cancelJob(name, kind)}
-            />
-          </If>
-          <If when={job().status === "ready"}>
-            <Button
-              label={t("job.ready")}
-              size="small"
-              variant="ghost"
-              accessibilityLabel={t("job.cancelInstall", { name })}
-              onPress={() => void cancelJob(name, kind)}
-            />
-          </If>
-          <If when={job().status === "downloading"}>
-            <View class="flex-row items-center gap-2">
-              <Progress
-                value={job().percent ?? undefined}
-                indeterminate={job().percent == null}
-              />
-              <Text class="text-xs font-medium text-foreground">
-                {job().percent == null
-                  ? stageLabel(job().stage)
-                  : `${Math.round(job().percent ?? 0)}%`}
-              </Text>
-              <Button
-                label={t("common.cancel")}
-                size="small"
-                variant="ghost"
-                accessibilityLabel={t("job.cancelDownload", { name })}
-                onPress={() => void cancelJob(name, kind)}
-              />
-            </View>
-          </If>
           <If when={job().status === "failed"}>
             <View class="flex-row items-center gap-1">
               <Button
@@ -85,15 +57,22 @@ export function JobSlot(props: { name: string; kind: JobKind }) {
               />
             </View>
           </If>
-          <If when={job().status === "installing"}>
-            <View class="flex-row items-center gap-2">
-              <InstallProgress kind={kind} stage={job().stage} />
+          <If when={job().status !== "failed"}>
+            <View class="flex-row items-center gap-1">
+              <IconButton
+                icon="loader-circle"
+                label={jobStatusText(job())}
+                size="small"
+                variant="default"
+                loading
+                tooltip={<Tooltip label={jobStatusText(job())} />}
+              />
               <If when={canCancelJob(job())}>
-                <Button
-                  label={t("common.cancel")}
+                <IconButton
+                  icon="x"
+                  label={cancelLabel(kind, job().status, name)}
                   size="small"
-                  variant="ghost"
-                  accessibilityLabel={t("job.cancelInstall", { name })}
+                  tooltip={<Tooltip label={t("common.cancel")} />}
                   onPress={() => void cancelJob(name, kind)}
                 />
               </If>

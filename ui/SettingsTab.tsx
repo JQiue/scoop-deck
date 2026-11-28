@@ -1,5 +1,5 @@
 import { appInfo, Clipboard, effect, Scroll, signal, Text, View } from "nsh";
-import { Button, Panel, Select, Switch } from "./omarchy";
+import { Button, Icon, Panel, Select, Switch, Tooltip } from "./omarchy";
 import { confirm } from "./confirm";
 import { Scoop, type ScoopSettings } from "scoop-deck/native";
 import {
@@ -350,10 +350,29 @@ export function SettingsTab() {
     }
   }
 
+  /** 标签旁的装饰性帮助图标：只做悬停/说明，不进入 Tab 顺序。 */
+  function helpHint(hint: string) {
+    return (
+      <View tooltip={<Tooltip label={hint} />} class="p-0.5">
+        <Icon name="info" size={14} class="text-muted-foreground" />
+      </View>
+    );
+  }
+
+  /** 设置项标题；`hint` 是悬停/聚焦后显示的说明。 */
+  function rowTitle(label: string, hint?: string) {
+    return (
+      <View class="flex-row items-center gap-1">
+        <Text class="text-sm text-foreground">{label}</Text>
+        {hint ? helpHint(hint) : null}
+      </View>
+    );
+  }
+
   /** 设置里的一行：普通项左右排；宽控件在窄窗口下改成上下排。 */
   function settingRow(
     label: string,
-    hint: string,
+    hint: string | undefined,
     control: any,
     stack = false,
   ) {
@@ -365,10 +384,7 @@ export function SettingsTab() {
             : "flex-row items-center gap-4"
         }`}
       >
-        <View class="flex-1 gap-0.5">
-          <Text class="text-sm text-foreground">{label}</Text>
-          <Text class="text-xs text-muted-foreground">{hint}</Text>
-        </View>
+        <View class="flex-1">{rowTitle(label, hint)}</View>
         {control}
       </View>
     );
@@ -382,7 +398,7 @@ export function SettingsTab() {
     );
   }
 
-  function flagRow(key: FlagKey, label: string, hint: string) {
+  function flagRow(key: FlagKey, label: string, hint?: string) {
     return settingRow(
       label,
       hint,
@@ -456,7 +472,7 @@ export function SettingsTab() {
   function languageRow() {
     return settingRow(
       t("settings.language"),
-      t("settings.languageHint"),
+      undefined,
       <Select
         class="w-[200px]"
         items={[
@@ -476,7 +492,7 @@ export function SettingsTab() {
   function themeRow() {
     return settingRow(
       t("settings.theme"),
-      t("settings.themeHint"),
+      undefined,
       <Select
         class="w-[200px]"
         items={[
@@ -643,7 +659,7 @@ export function SettingsTab() {
           <View>
             <View class="flex-row items-center gap-4 border-b border-border py-2.5">
               <View class="flex-1 gap-0.5">
-                <Text class="text-sm text-foreground">{t("settings.updateScoop")}</Text>
+                {rowTitle(t("settings.updateScoop"))}
                 <Text
                   class="text-xs text-muted-foreground"
                   style={{ numberOfLines: 1 }}
@@ -704,11 +720,7 @@ export function SettingsTab() {
         {section(
           t("settings.section.advanced"),
           <View>
-            {flagRow(
-              "debug",
-              t("settings.debug"),
-              t("settings.debugHint"),
-            )}
+            {flagRow("debug", t("settings.debug"))}
           </View>,
         )}
 
@@ -717,13 +729,15 @@ export function SettingsTab() {
           <View>
             <View class="flex-row items-center gap-4 border-b border-border py-2.5">
               <View class="flex-1 gap-0.5">
-                <Text class="text-sm text-foreground">{t("settings.exportTitle")}</Text>
-                <Text
-                  class="text-xs text-muted-foreground"
-                  style={{ numberOfLines: 1 }}
-                >
-                  {exported() ?? t("settings.exportHint")}
-                </Text>
+                {rowTitle(t("settings.exportTitle"), t("settings.exportHint"))}
+                <If when={exported()}>
+                  <Text
+                    class="text-xs text-muted-foreground"
+                    style={{ numberOfLines: 1 }}
+                  >
+                    {exported()}
+                  </Text>
+                </If>
               </View>
               <If when={exported()}>
                 <Button
@@ -742,14 +756,8 @@ export function SettingsTab() {
               />
             </View>
             <View class="flex-row items-center gap-4 py-2.5">
-              <View class="flex-1 gap-0.5">
-                <Text class="text-sm text-foreground">{t("settings.importTitle")}</Text>
-                <Text
-                  class="text-xs text-muted-foreground"
-                  style={{ numberOfLines: 1 }}
-                >
-                  {t("settings.importHint")}
-                </Text>
+              <View class="flex-1">
+                {rowTitle(t("settings.importTitle"), t("settings.importHint"))}
               </View>
               <Button
                 label={

@@ -90,7 +90,7 @@ test("asks before uninstalling in a themed dialog", async () => {
   const app = await openApp();
 
   await app.waitFor("id:tab-installed");
-  await app.press("text:Uninstall");
+  await app.press("label:Uninstall");
   await app.waitFor("text:Confirm uninstall");
   expect(app.texts()).toContain("Uninstall git? This cannot be undone.");
 
@@ -104,7 +104,7 @@ test("uninstalls after the dialog is confirmed", async () => {
   const app = await openApp();
 
   await app.waitFor("id:tab-installed");
-  await app.press("text:Uninstall");
+  await app.press("label:Uninstall");
   await app.waitFor("text:Confirm uninstall");
 
   // 顶层弹窗里的“Uninstall”是确认按钮（表格行里的那个在其前面）。

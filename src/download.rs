@@ -300,13 +300,34 @@ impl Scoop {
         progress: &Sender<InstallProgress>,
     ) -> Result<usize, String> {
         let manifest = Self::find_manifest(name)?;
+        Self::prefetch_manifest(name, &manifest, flag, progress)
+    }
+
+    /// 从一个清单 URL 预下载：先取远端清单，再用清单里的地址填 Scoop cache。
+    pub(crate) fn prefetch_url_impl(
+        url: &str,
+        name: &str,
+        flag: &Arc<AtomicBool>,
+        progress: &Sender<InstallProgress>,
+    ) -> Result<usize, String> {
+        let manifest = Self::fetch_manifest_from_url(url)
+            .ok_or_else(|| format!("无法读取 {url} 的清单"))?;
+        Self::prefetch_manifest(name, &manifest, flag, progress)
+    }
+
+    fn prefetch_manifest(
+        app: &str,
+        manifest: &serde_json::Value,
+        flag: &Arc<AtomicBool>,
+        progress: &Sender<InstallProgress>,
+    ) -> Result<usize, String> {
         let version = manifest
             .get("version")
             .and_then(|version| version.as_str())
             .unwrap_or_default()
             .to_string();
         let mut urls = Vec::new();
-        Self::manifest_urls(&manifest, &version, &mut urls);
+        Self::manifest_urls(manifest, &version, &mut urls);
 
         if urls.is_empty() {
             return Err("清单里没有可直接下载的地址".into());
@@ -319,11 +340,11 @@ impl Scoop {
 
         for (index, url) in urls.iter().enumerate() {
             if flag.load(Ordering::Relaxed) {
-                Self::cleanup_partial(name);
+                Self::cleanup_partial(app);
                 return Err(ERR_CANCELLED.into());
             }
 
-            let key = Self::cache_key(name, &version, url);
+            let key = Self::cache_key(app, &version, url);
             let target = cache_dir.join(&key);
 
             if target.metadata().is_ok_and(|metadata| metadata.len() > 0) {
@@ -331,13 +352,13 @@ impl Scoop {
                 continue;
             }
 
-            let expected = Self::expected_hash(&manifest, index, total);
+            let expected = Self::expected_hash(manifest, index, total);
             let part = cache_dir.join(format!("{key}.download"));
 
             if let Err(error) = Self::download_to(url, &part, flag, progress) {
                 // 用户取消时连残片一起清掉；普通失败保留，下次可续传。
                 if error == ERR_CANCELLED {
-                    Self::cleanup_partial(name);
+                    Self::cleanup_partial(app);
                 }
 
                 return Err(error);
@@ -351,7 +372,7 @@ impl Scoop {
 
                 if let Err(error) = Self::download_to(url, &part, flag, progress) {
                     if error == ERR_CANCELLED {
-                        Self::cleanup_partial(name);
+                        Self::cleanup_partial(app);
                     }
 
                     return Err(error);

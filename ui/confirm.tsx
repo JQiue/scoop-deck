@@ -48,30 +48,32 @@ function settle(ok: boolean) {
 
 export function ConfirmHost() {
   return (
-    <Dialog
-      title={request()?.title ?? ""}
-      description={request()?.description ?? null}
-      open={visible()}
-      // 和 `AlertDialog` 一样：点背景不关闭，只有按钮和 Escape 能关。
-      closeOnBackdropPress={false}
-      onOpenChange={(event) => {
-        if (!event.open) {
-          settle(false);
+    <If when={visible()}>
+      <Dialog
+        title={request()?.title ?? ""}
+        description={request()?.description ?? null}
+        open={visible()}
+        // 和 `AlertDialog` 一样：点背景不关闭，只有按钮和 Escape 能关。
+        closeOnBackdropPress={false}
+        onOpenChange={(event) => {
+          if (!event.open) {
+            settle(false);
+          }
+        }}
+        footer={
+          <View class="flex-row justify-end gap-2">
+            <Button
+              label={request()?.actionLabel ?? t("common.ok")}
+              variant={request()?.tone === "danger" ? "danger" : "primary"}
+              onPress={() => settle(true)}
+            />
+            <Button
+              label={request()?.cancelLabel ?? t("common.cancel")}
+              onPress={() => settle(false)}
+            />
+          </View>
         }
-      }}
-      footer={
-        <View class="flex-row justify-end gap-2">
-          <Button
-            label={request()?.cancelLabel ?? t("common.cancel")}
-            onPress={() => settle(false)}
-          />
-          <Button
-            label={request()?.actionLabel ?? t("common.ok")}
-            variant={request()?.tone === "danger" ? "danger" : "primary"}
-            onPress={() => settle(true)}
-          />
-        </View>
-      }
-    />
+      />
+    </If>
   );
 }

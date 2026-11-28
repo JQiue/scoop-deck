@@ -11,6 +11,7 @@ import type { ScoopApp } from "scoop-deck/native";
 import {
   Button,
   EmptyState,
+  IconButton,
   Popover,
   Toggle,
   Tooltip,
@@ -78,9 +79,11 @@ export function InstalledTab() {
           </If>
           <If when={!preparing().includes(app.name)}>
             <If when={hasUpdate(app)}>
-              <Button
+              <IconButton
+                icon="arrow-up"
                 label={t("common.update")}
                 size="small"
+                variant="default"
                 onPress={() => void updateApp(app)}
               />
             </If>
@@ -88,7 +91,8 @@ export function InstalledTab() {
         </If>
         <JobSlot name={app.name} kind="uninstall" />
         <If when={!jobOf(app.name, "uninstall")}>
-          <Button
+          <IconButton
+            icon="trash"
             label={t("common.uninstall")}
             size="small"
             variant="danger"

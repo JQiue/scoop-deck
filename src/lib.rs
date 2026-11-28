@@ -403,6 +403,27 @@ impl Scoop {
         .await
     }
 
+    /// 从一个清单 URL 预下载（URL 安装用）：先取远端清单，再把清单里的
+    /// 下载地址填进 Scoop cache，随后 `scoop install <url>` 直接使用缓存。
+    pub async fn prefetch_url(
+        url: String,
+        name: String,
+        on_progress: Callback<InstallProgress>,
+    ) -> Result<(), String> {
+        let flag = job_flag(&name);
+        let (sender, receiver) = mpsc::channel();
+        let (result_sender, result_receiver) = mpsc::channel();
+        let worker_name = name.clone();
+        let _worker = blocking(move || {
+            let result =
+                Self::prefetch_url_impl(&url, &worker_name, &flag, &sender).map(|_| ());
+            let _ = result_sender.send(result);
+        });
+        let result = Self::wait_for_progress(receiver, result_receiver, on_progress).await;
+        finish_job(&name);
+        result
+    }
+
     /// 取消某个包的下载或安装（按包区分，不影响其它并行下载）。
     pub async fn cancel(name: String) -> bool {
         let pid = {
@@ -460,6 +481,26 @@ impl Scoop {
         on_progress: Callback<InstallProgress>,
     ) -> Result<(), String> {
         Self::run_job_with_progress(name, on_progress, Self::install_app).await
+    }
+
+    /// `scoop install <url>`：从一个清单地址安装。`name` 是从地址推导的
+    /// 应用名，用于进度、取消和安装结果校验。
+    pub async fn install_url(
+        url: String,
+        name: String,
+        on_progress: Callback<InstallProgress>,
+    ) -> Result<(), String> {
+        let flag = job_flag(&name);
+        let (sender, receiver) = mpsc::channel();
+        let (result_sender, result_receiver) = mpsc::channel();
+        let worker_name = name.clone();
+        let _worker = blocking(move || {
+            let result = Self::install_url_app(&url, &worker_name, &flag, sender);
+            let _ = result_sender.send(result);
+        });
+        let result = Self::wait_for_progress(receiver, result_receiver, on_progress).await;
+        finish_job(&name);
+        result
     }
 
     /// `scoop uninstall <name>`。

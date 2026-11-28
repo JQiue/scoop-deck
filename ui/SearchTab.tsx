@@ -1,4 +1,4 @@
-import { Scroll, Text, View } from "nsh";
+import { signal, Scroll, Text, View } from "nsh";
 import {
   Table,
   TableBody,
@@ -8,17 +8,18 @@ import {
   TableRow,
 } from "nsh/base";
 import type { ScoopCatalogApp } from "scoop-deck/native";
-import { Button, EmptyState, Tooltip } from "./omarchy";
+import { Button, Dialog, EmptyState, Tooltip } from "./omarchy";
 import {
   CELL,
   FIELD_W,
+  FIELD_W_WIDE,
   HEAD,
   SURFACE,
   TextField,
   useCompact,
 } from "./ui";
 import { JobSlot, PreparingButton } from "./JobSlot";
-import { TAB_BUCKETS, useDeck } from "./deck";
+import { isManifestUrl, TAB_BUCKETS, useDeck } from "./deck";
 import { t } from "./i18n";
 
 export function SearchTab() {
@@ -31,12 +32,36 @@ export function SearchTab() {
     matched,
     shown,
     installApp,
+    installFromUrl,
     jobOf,
     preparing,
     installedNames,
     openDetails,
   } = useDeck();
   const compact = useCompact();
+  const urlOpen = signal(false);
+  const urlDraft = signal("");
+  const urlError = signal<string | null>(null);
+
+  function openUrlDialog() {
+    urlDraft.set("");
+    urlError.set(null);
+    urlOpen.set(true);
+  }
+
+  function submitUrl() {
+    const url = urlDraft().trim();
+
+    if (!isManifestUrl(url)) {
+      urlError.set(t("search.urlInvalid"));
+      return;
+    }
+
+    urlOpen.set(false);
+    urlDraft.set("");
+    urlError.set(null);
+    installFromUrl(url);
+  }
 
   /** 表格行和窄屏卡片共用同一组操作。 */
   function rowActions(app: ScoopCatalogApp) {
@@ -80,6 +105,14 @@ export function SearchTab() {
           onChange={(value) => query.set(value)}
         />
         <Text class="text-sm text-muted-foreground">{hint()}</Text>
+        <Button
+          class="ml-auto"
+          label={t("search.installFromUrl")}
+          icon="link"
+          size="small"
+          variant="ghost"
+          onPress={openUrlDialog}
+        />
       </View>
       <If when={query().trim() === ""}>
         <View class="flex-1 items-center justify-center gap-2 px-6">
@@ -231,6 +264,56 @@ export function SearchTab() {
             />
           </If>
         </Scroll>
+      </If>
+
+      <If when={urlOpen()}>
+        <Dialog
+          title={t("search.urlTitle")}
+          description={t("search.urlDesc")}
+          open={urlOpen()}
+        // 和确认框一致：点背景不关闭，Escape / 按钮才关。
+        closeOnBackdropPress={false}
+        onOpenChange={(event) => {
+          if (!event.open) {
+            urlOpen.set(false);
+            urlError.set(null);
+          }
+        }}
+        footer={
+          <View class="flex-row justify-end gap-2">
+            <Button
+              label={t("common.install")}
+              variant="primary"
+              disabled={urlDraft().trim() === ""}
+              onPress={submitUrl}
+            />
+            <Button
+              label={t("common.cancel")}
+              onPress={() => {
+                urlOpen.set(false);
+                urlError.set(null);
+              }}
+            />
+          </View>
+        }
+      >
+        <View class="gap-2">
+          <TextField
+            testID="url-input"
+            style={{ width: FIELD_W_WIDE }}
+            value={urlDraft()}
+            placeholder={t("search.urlPlaceholder")}
+            accessibilityLabel={t("search.urlField")}
+            onChange={(value) => {
+              urlDraft.set(value);
+              urlError.set(null);
+            }}
+          />
+          <If when={urlError()}>
+            <Text class="text-xs text-destructive">{urlError()}</Text>
+          </If>
+        </View>
+        </Dialog>
       </If>
     </View>
   );

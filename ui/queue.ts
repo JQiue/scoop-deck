@@ -39,7 +39,7 @@ export function createQueue(input: {
   let batch = { ok: 0, failed: 0, total: 0 };
 
   /** 加入队列：下载最多 3 个并行，安装严格串行。 */
-  function enqueue(job: { name: string; kind: JobKind }) {
+  function enqueue(job: { name: string; kind: JobKind; url?: string }) {
     if (jobOf(job.name, job.kind)) {
       return;
     }
@@ -50,7 +50,7 @@ export function createQueue(input: {
 
     batch.total += 1;
 
-    // 卸载不需要下载，直接排到安装队列。
+    // 卸载直接进安装队列；URL 安装和普通安装一样先走预下载。
     const status: JobStatus = job.kind === "uninstall" ? "ready" : "waiting";
     jobs.set([
       ...jobs(),
@@ -85,28 +85,38 @@ export function createQueue(input: {
     }
   }
 
-  async function startDownload(job: { name: string; kind: JobKind }) {
+  async function startDownload(job: Job) {
     setJob(job.name, job.kind, {
       status: "downloading",
       stage: "preparing",
       percent: null,
     });
 
-    try {
-      await Scoop.prefetch(job.name, (progress) => {
-        setJob(job.name, job.kind, {
-          status: "downloading",
-          stage: progress.stage,
-          percent: progress.percent ?? null,
-        });
+    const onProgress = (progress: InstallProgress) => {
+      setJob(job.name, job.kind, {
+        status: "downloading",
+        stage: progress.stage,
+        percent: progress.percent ?? null,
       });
+    };
+
+    try {
+      if (job.url) {
+        await Scoop.prefetchUrl(job.url, job.name, onProgress);
+      } else {
+        await Scoop.prefetch(job.name, onProgress);
+      }
       setJob(job.name, job.kind, { status: "ready", percent: 100 });
     } catch (cause) {
       if (isCancelledError(cause)) {
         removeJob(job.name, job.kind);
       } else {
         // 预下载失败也继续：让 Scoop 自己下载。
-        setJob(job.name, job.kind, { status: "ready", percent: null });
+        setJob(job.name, job.kind, {
+          status: "ready",
+          percent: null,
+          fallback: true,
+        });
       }
     }
 
@@ -114,9 +124,10 @@ export function createQueue(input: {
   }
 
   /** 执行安装/卸载，把进度写进该任务，行内按钮随之变化。 */
-  async function startInstall(job: { name: string; kind: JobKind }) {
+  async function startInstall(job: Job) {
     setJob(job.name, job.kind, {
-      status: "installing",
+      // 预下载失败后的回退是 Scoop 在下载，不能先显示安装中。
+      status: job.fallback ? "downloading" : "installing",
       stage: "preparing",
       percent: null,
     });
@@ -124,15 +135,21 @@ export function createQueue(input: {
     let outcome: "ok" | "failed" | "cancelled" = "ok";
 
     const onProgress = (progress: InstallProgress) => {
+      // Scoop 在 install/update 过程中也可能自己下载（预下载失败回退时）。
+      // 这是下载阶段，不能写成 installing，否则会一直显示「安装中」。
+      const downloading =
+        progress.stage === "downloading" || progress.stage === "waiting";
       setJob(job.name, job.kind, {
-        status: "installing",
+        status: downloading ? "downloading" : "installing",
         stage: progress.stage,
         percent: progress.percent ?? null,
       });
     };
 
     try {
-      if (job.kind === "install") {
+      if (job.url) {
+        await Scoop.installUrl(job.url, job.name, onProgress);
+      } else if (job.kind === "install") {
         await Scoop.install(job.name, onProgress);
       } else if (job.kind === "update") {
         await Scoop.update(job.name, onProgress);
@@ -155,7 +172,6 @@ export function createQueue(input: {
       }
     } finally {
       if (outcome === "ok") {
-        removeJob(job.name, job.kind);
         batch.ok += 1;
         recentlyDone.set(job.name);
         setTimeout(() => {
@@ -167,7 +183,14 @@ export function createQueue(input: {
         batch.failed += 1;
       }
 
+      // 先刷新列表再移除任务：卸载完成后如果先移除 job，垃圾桶会在
+      // 列表刷新前短暂恢复，看起来像又能点一次。
       await refreshAfterAction();
+
+      if (outcome === "ok") {
+        removeJob(job.name, job.kind);
+      }
+
       schedule();
 
       // 整批结束才汇总，避免一次弹很多条。
@@ -204,8 +227,9 @@ export function createQueue(input: {
 
   /** 重试失败的任务。 */
   function retryJob(name: string, kind: JobKind) {
+    const url = jobOf(name, kind)?.url;
     removeJob(name, kind);
-    enqueue({ name, kind });
+    enqueue({ name, kind, url });
   }
 
   /** 排队中/待安装的直接移出队列；下载中/安装中的通知 Rust 取消。 */

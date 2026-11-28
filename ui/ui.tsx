@@ -8,6 +8,7 @@ import {
 } from "nsh";
 import { IconButton, Input, Progress } from "./omarchy";
 import { t } from "./i18n";
+import type { Job } from "./types";
 
 // 窗口窄到这个宽度以下时，表格改成卡片、设置项改成上下排布。
 export const COMPACT_WIDTH = 900;
@@ -46,25 +47,39 @@ export function TextField(props: {
 }) {
   return (
     <View
-      class={`flex-row items-center gap-1 ${props.class ?? ""}`}
+      class={`relative ${props.class ?? ""}`}
       style={props.style}
     >
       <Input
         testID={props.testID}
         accessibilityLabel={props.accessibilityLabel}
-        class="min-w-0 flex-1"
+        class={
+          props.value !== "" && props.onClear !== undefined
+            ? "min-w-0 w-full pr-7"
+            : "min-w-0 w-full"
+        }
+        style={
+          props.value !== "" && props.onClear !== undefined
+            ? { paddingRight: 28 }
+            : undefined
+        }
         value={props.value}
         placeholder={props.placeholder}
         disabled={props.disabled}
         onChange={(event) => props.onChange(event.value)}
       />
       <If when={props.value !== "" && props.onClear !== undefined}>
-        <IconButton
-          icon="x"
-          size="small"
-          label={props.clearLabel ?? t("ui.clear")}
-          onPress={() => props.onClear?.()}
-        />
+        <View
+          class="items-center justify-center"
+          style={{ position: "absolute", top: 0, bottom: 0, right: 2 }}
+        >
+          <IconButton
+            icon="x"
+            size="small"
+            label={props.clearLabel ?? t("ui.clear")}
+            onPress={() => props.onClear?.()}
+          />
+        </View>
       </If>
     </View>
   );
@@ -92,23 +107,25 @@ export function formatBytes(bytes: number): string {
   return unit === 0 ? `${value} B` : `${value.toFixed(1)} ${units[unit]}`;
 }
 
-/** 进度按钮上显示的阶段文字（没有百分比时用）。 */
-export function stageLabel(stage: string): string {
-  switch (stage) {
-    case "preparing":
-      return t("stage.preparing");
-    case "downloading":
-      return t("stage.downloading");
-    case "verifying":
-      return t("stage.verifying");
-    case "extracting":
-      return t("stage.extracting");
-    case "finalizing":
-      return t("stage.finalizing");
+/** 队列/行内进度显示的状态文字：只有下载中和安装中两个阶段。 */
+export function jobStatusText(job: Job): string {
+  switch (job.status) {
     case "waiting":
-      return t("stage.waiting");
+      return t("job.waiting");
+    case "downloading":
+      return job.percent == null
+        ? t("job.downloading")
+        : t("job.downloadingPercent", {
+            percent: Math.round(job.percent),
+          });
+    case "ready":
+      return t("job.ready");
+    case "installing":
+      return job.kind === "uninstall"
+        ? t("job.uninstalling")
+        : t("job.installing");
     default:
-      return t("stage.working");
+      return t("job.failed");
   }
 }
 

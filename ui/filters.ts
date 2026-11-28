@@ -1,5 +1,6 @@
 import { computed } from "nsh";
 import type { ScoopApp } from "scoop-deck/native";
+import { rankMatches } from "./match";
 import { t } from "./i18n";
 import {
   FILTER_ALL_BUCKETS,
@@ -76,7 +77,7 @@ export function createInstalledFilters(input: {
     const status = installedStatus();
     const bucket = bucketFilter();
 
-    return apps().filter((app) => {
+    const filtered = apps().filter((app) => {
       if (status === "updatable" && !hasUpdate(app)) {
         return false;
       }
@@ -100,6 +101,9 @@ export function createInstalledFilters(input: {
 
       return true;
     });
+
+    // 和搜索页共用同一套优先级：完全匹配 > 前缀 > 名称包含 > 描述包含。
+    return keyword === "" ? filtered : rankMatches(filtered, keyword);
   });
   /** 是否设置了任意筛选条件。 */
   const filtersActive = computed(

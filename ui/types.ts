@@ -65,4 +65,8 @@ export interface Job {
   status: JobStatus;
   stage: string;
   percent: number | null;
+  /** 从 URL 清单安装时的清单地址；普通 bucket 任务没有。 */
+  url?: string;
+  /** 预下载失败后回退给 Scoop 下载。 */
+  fallback?: boolean;
 }

@@ -25,6 +25,25 @@ import {
 
 export * from "./types";
 
+const HTTP_URL = /^https?:\/\/\S+$/i;
+
+/** 清单地址是否像 http(s) URL，并且能从文件名推导出应用名。 */
+export function isManifestUrl(raw: string): boolean {
+  return HTTP_URL.test(raw.trim()) && manifestAppName(raw) !== "";
+}
+
+/** Scoop 用清单文件名作为应用名：`.../foo.json` → `foo`。 */
+export function manifestAppName(raw: string): string {
+  const clean = raw.trim().split(/[?#]/, 1)[0].replace(/\/+$/, "");
+  const base = clean.split("/").pop() ?? "";
+
+  try {
+    return decodeURIComponent(base).replace(/\.json$/i, "").trim();
+  } catch {
+    return "";
+  }
+}
+
 export function createDeck() {
   const tab = signal(TAB_INSTALLED);
   /** null = 正在检查；false = 没装 Scoop；true = 可以正常加载。 */
@@ -313,6 +332,23 @@ export function createDeck() {
     }
   }
 
+  /** 从 URL 清单安装：不预下载，Scoop 自己下载并输出进度。 */
+  function installFromUrl(rawUrl: string) {
+    const url = rawUrl.trim();
+    const name = manifestAppName(url);
+
+    if (!isManifestUrl(url) || !name) {
+      error.set(t("search.urlInvalid"));
+      return;
+    }
+
+    if (jobOf(name, "install")) {
+      return;
+    }
+
+    enqueue({ name, kind: "install", url });
+  }
+
   /** 把有更新的包全部排队（先确认一次）。列表来自当前筛选结果。 */
   async function updateAll(list: ScoopApp[]) {
     if (list.length === 0) {
@@ -530,6 +566,7 @@ export function createDeck() {
     retryJob: queue.retryJob,
     cancelJob: queue.cancelJob,
     installApp,
+    installFromUrl,
     updateAll,
     updateApp,
     uninstallApp,

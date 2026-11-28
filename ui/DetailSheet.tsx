@@ -41,8 +41,9 @@ export function DetailSheet() {
   } = useDeck();
 
   return (
-    <Sheet
-      open={detailOpen()}
+    <If when={detailOpen()}>
+      <Sheet
+        open={detailOpen()}
       onOpenChange={(event) => {
         if (!event.open) {
           closeDetails();
@@ -147,6 +148,7 @@ export function DetailSheet() {
           </View>
         )}
       </If>
-    </Sheet>
+      </Sheet>
+    </If>
   );
 }

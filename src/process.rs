@@ -264,6 +264,17 @@ impl Scoop {
         Self::run_scoop_with_progress(&["install", name], name, flag, progress)
     }
 
+    /// `scoop install <url>`：`name` 是从清单地址推导出的应用名，用于
+    /// 进度、取消和安装结果校验。
+    pub(crate) fn install_url_app(
+        url: &str,
+        name: &str,
+        flag: &Arc<AtomicBool>,
+        progress: Sender<InstallProgress>,
+    ) -> Result<(), String> {
+        Self::run_scoop_with_progress(&["install", url], name, flag, progress)
+    }
+
     pub(crate) fn uninstall_app(name: &str) -> Result<(), String> {
         Self::run_scoop(&["uninstall", name])?;
 

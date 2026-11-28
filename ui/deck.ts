@@ -1,5 +1,5 @@
 import { Clipboard, context, signal } from "nsh";
-import { toast } from "./omarchy";
+import { notify as showToast } from "./toast";
 import { confirm } from "./confirm";
 import {
   Scoop,
@@ -170,7 +170,7 @@ export function createDeck() {
 
   /** 右下角弹一条几秒后自动消失的提示。 */
   function notify(text: string) {
-    toast({ title: text, timeout: 3500 });
+    showToast(text);
   }
 
   /** 打开包详情面板。 */

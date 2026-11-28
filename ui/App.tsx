@@ -8,7 +8,7 @@ import {
   Text,
   View,
 } from "nsh";
-import { Button, Tab, Tabs, Toaster } from "./omarchy";
+import { Button, Tab, Tabs } from "./omarchy";
 import { Application, Tray, Window } from "nsh/desktop";
 import trayIcon from "./assets/tray.png";
 import {
@@ -24,6 +24,7 @@ import { SearchTab } from "./SearchTab";
 import { BucketsTab } from "./BucketsTab";
 import { DetailSheet } from "./DetailSheet";
 import { ErrorToast } from "./ErrorBanner";
+import { ToastHost } from "./toast";
 import { ConfirmHost } from "./confirm";
 import { QueueIndicator } from "./QueueIndicator";
 import { ScoopSetup } from "./ScoopSetup";
@@ -277,7 +278,7 @@ function App() {
                 pointerEvents: "box-none",
               }}
             >
-              <Toaster />
+              <ToastHost />
             </Overlay>
           </View>
 

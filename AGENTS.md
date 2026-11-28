@@ -34,6 +34,8 @@ Windows-only Scoop package manager UI. TSX (nsh) for the UI, Rust for anything t
 - `ui/InstalledTab.tsx`, `SearchTab.tsx`, `BucketsTab.tsx`, `SettingsTab.tsx`, `DetailSheet.tsx`, `QueueIndicator.tsx`, `JobSlot.tsx`, `ErrorBanner.tsx`, `ScoopSetup.tsx` — screens/widgets.
 - `ui/omarchy.ts` — central re-export of `nsh-omarchy`; import controls from here.
 - `ui/confirm.tsx` — themed `confirm()` and its `ConfirmHost` (Omarchy `Dialog`); mounted once in `ui/App.tsx`.
+- `ui/toast.tsx` — `notify()` and the bottom-right `ToastHost`; icon, text and close button are vertically centered.
+- `ui/tooltip.tsx` — `HintTooltip` for long or dynamic tooltip text; wraps inside 320pt instead of overflowing the bubble.
 - `ui/theme.ts` / `ui/i18n.ts` — theme and language preferences in nsh `Storage`.
 - `src/lib.rs` — `#[native_module("scoop-deck/native")]`, `Scoop` API, manifests, tests. `download.rs`, `process.rs`, `settings.rs` split `impl Scoop` on purpose.
 - App root is the repo root (`nsh.json`, `tsconfig.json`, `.nsh/`, `target/`); all TS/TSX stays under `ui/`.
@@ -43,7 +45,8 @@ Windows-only Scoop package manager UI. TSX (nsh) for the UI, Rust for anything t
 
 - nsh 0.7 nshm: install `nsh-omarchy` with `nsh add`. Do not vendor it or add a `register_components` bridge; components are registered by their own `nsh-omarchy` native module.
 - Import Omarchy controls through `./omarchy`, which re-exports from `"nsh-omarchy"`.
-- Use `toast()` for transient feedback and `confirm()` from `ui/confirm.tsx` for confirmations. `nsh-omarchy` also exports `confirm`/`AlertDialog`, but those draw the platform alert (a WinUI3-style card on Windows) and ignore `theme.json` — do not use them for app dialogs.
+- Use `notify()` (backed by `ui/toast.tsx`) for transient feedback and `confirm()` from `ui/confirm.tsx` for confirmations. Do not use `nsh-omarchy`'s `Toaster`/`toast`: its icon is top-aligned and misaligns with multi-line text.
+- Tooltips: use `HintTooltip` (`ui/tooltip.tsx`) for URLs, descriptions and help text so they wrap inside the bubble; Omarchy's `Tooltip` only for short static labels.
 - Keep `theme.json` (copied from nsh-omarchy) as `nsh.json` `"theme"`. Switch with `setColorScheme("system" | "light" | "dark")`.
 - Do not call `Omarchy.followSystem()` on Windows: it reads a Linux Omarchy theme path, falls back to Tokyo Night, and locks the app to dark.
 - The installed/search/bucket lists use `nsh/base` `Table` because Omarchy table cells are text-only and cannot hold row actions/version arrows. Other UI uses Omarchy.

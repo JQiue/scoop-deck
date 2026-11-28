@@ -26,6 +26,7 @@ import {
   useCompact,
 } from "./ui";
 import { JobSlot, PreparingButton } from "./JobSlot";
+import { HintTooltip } from "./tooltip";
 import { TAB_SEARCH, useDeck } from "./deck";
 import { InstalledStatus, isUrlSource } from "./types";
 import { t } from "./i18n";
@@ -245,7 +246,7 @@ export function InstalledTab() {
                       <TableCell class="flex-1">
                         <If when={isUrlSource(item().bucket)}>
                           <View
-                            tooltip={<Tooltip label={item().bucket} />}
+                            tooltip={<HintTooltip label={item().bucket} />}
                           >
                             <Text class={CELL} style={{ numberOfLines: 1 }}>
                               {sourceLabel(item())}
@@ -261,7 +262,7 @@ export function InstalledTab() {
                       <TableCell
                         style={{ flex: 2 }}
                         tooltip={
-                          <Tooltip label={item().description} />
+                          <HintTooltip label={item().description} />
                         }
                       >
                         <Text class={CELL} style={{ numberOfLines: 1 }}>
@@ -304,7 +305,7 @@ export function InstalledTab() {
                     <If when={isUrlSource(item().bucket)}>
                       <View
                         class="shrink-0"
-                        tooltip={<Tooltip label={item().bucket} />}
+                        tooltip={<HintTooltip label={item().bucket} />}
                       >
                         <Text
                           class="text-xs text-muted-foreground"

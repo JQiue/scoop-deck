@@ -51,7 +51,7 @@ export function ErrorToast() {
           >
             <View
               style={{ pointerEvents: "auto" }}
-              class={`relative flex w-full max-w-[720px] flex-col rounded-(--radius) border border-destructive/40 bg-background shadow-lg ${
+              class={`relative flex w-full max-w-[720px] flex-col overflow-hidden rounded-(--radius) border border-destructive/40 bg-background shadow-lg ${
                 expanded() ? "p-3" : "px-3 py-2"
               }`}
             >
@@ -62,7 +62,7 @@ export function ErrorToast() {
                   onPress={() => expanded.set(true)}
                 >
                   <Text
-                    class="flex-1 text-sm text-destructive"
+                    class="min-w-0 flex-1 text-sm text-destructive whitespace-normal"
                     style={{ numberOfLines: 1 }}
                   >
                     {message()}
@@ -78,7 +78,7 @@ export function ErrorToast() {
                   style={{ maxHeight: 220 }}
                   contentStyle={{ paddingRight: 0 }}
                 >
-                  <Text class="text-sm text-destructive">{message()}</Text>
+                  <Text class="text-sm text-destructive whitespace-normal">{message()}</Text>
                 </Scroll>
               </If>
               {/* 操作按钮常驻，不依赖 hover；展开后也不会盖住滚动区域。 */}

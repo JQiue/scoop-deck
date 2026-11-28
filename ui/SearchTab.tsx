@@ -8,7 +8,7 @@ import {
   TableRow,
 } from "nsh/base";
 import type { ScoopCatalogApp } from "scoop-deck/native";
-import { Button, Dialog, EmptyState, Tooltip } from "./omarchy";
+import { Button, Dialog, EmptyState } from "./omarchy";
 import {
   CELL,
   FIELD_W,
@@ -19,6 +19,7 @@ import {
   useCompact,
 } from "./ui";
 import { JobSlot, PreparingButton } from "./JobSlot";
+import { HintTooltip } from "./tooltip";
 import { isManifestUrl, TAB_BUCKETS, useDeck } from "./deck";
 import { t } from "./i18n";
 
@@ -186,7 +187,7 @@ export function SearchTab() {
                         </TableCell>
                         <TableCell
                           style={{ flex: 2 }}
-                          tooltip={<Tooltip label={item().description} />}
+                          tooltip={<HintTooltip label={item().description} />}
                         >
                           <Text class={CELL} style={{ numberOfLines: 1 }}>
                             {item().description}

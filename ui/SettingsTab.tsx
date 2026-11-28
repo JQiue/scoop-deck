@@ -1,5 +1,6 @@
 import { appInfo, Clipboard, effect, Scroll, signal, Text, View } from "nsh";
-import { Button, Icon, Panel, Select, Switch, Tooltip } from "./omarchy";
+import { Button, Icon, Panel, Select, Switch } from "./omarchy";
+import { HintTooltip } from "./tooltip";
 import { confirm } from "./confirm";
 import { Scoop, type ScoopSettings } from "scoop-deck/native";
 import {
@@ -353,7 +354,10 @@ export function SettingsTab() {
   /** 标签旁的装饰性帮助图标：只做悬停/说明，不进入 Tab 顺序。 */
   function helpHint(hint: string) {
     return (
-      <View tooltip={<Tooltip label={hint} />} class="p-0.5">
+      <View
+        tooltip={<HintTooltip label={hint} />}
+        class="p-0.5"
+      >
         <Icon name="info" size={14} class="text-muted-foreground" />
       </View>
     );
